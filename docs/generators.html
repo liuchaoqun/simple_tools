@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generators</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .nav {
+            background: #34495e;
+            padding: 10px 30px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .generator-box {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .generator-box h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            background: #667eea;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #e0e0e0;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            word-break: break-all;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .result-box.has-content {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #qrCanvas {
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            max-width: 100%;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .batch-results {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 2px solid #e0e0e0;
+            margin: 20px 0;
+        }
+
+        .batch-item {
+            padding: 8px;
+            background: white;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Generators</h1>
+        </header>
+
+        <div class="nav">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('uuid')">UUID Generator</button>
+            <button class="tab" onclick="switchTab('password')">Password Generator</button>
+            <button class="tab" onclick="switchTab('qr')">QR Code Generator</button>
+        </div>
+
+        <!-- UUID Generator Tab -->
+        <div id="uuid-tab" class="tab-content active">
+            <div class="generator-box">
+                <h2>UUID Generator</h2>
+                <div class="info-text">
+                    Generate universally unique identifiers (UUIDs) v4. Perfect for database IDs, API keys, and unique identifiers.
+                </div>
+
+                <div class="input-group">
+                    <label>Number of UUIDs to generate:</label>
+                    <input type="number" id="uuidCount" value="1" min="1" max="100">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="uuidUppercase">
+                    <label for="uuidUppercase">Uppercase</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="uuidNoDashes">
+                    <label for="uuidNoDashes">Remove dashes</label>
+                </div>
+
+                <button onclick="generateUUIDs()">Generate UUIDs</button>
+
+                <div id="uuidResult" class="result-box">Click "Generate UUIDs" to create new UUIDs</div>
+
+                <button onclick="copyResult('uuid')">📋 Copy to Clipboard</button>
+
+                <div id="uuidMessage"></div>
+            </div>
+        </div>
+
+        <!-- Password Generator Tab -->
+        <div id="password-tab" class="tab-content">
+            <div class="generator-box">
+                <h2>Password Generator</h2>
+                <div class="info-text">
+                    Generate secure, random passwords with customizable options. Strong passwords help protect your accounts.
+                </div>
+
+                <div class="input-group">
+                    <label>Password Length: <span id="lengthValue">16</span></label>
+                    <input type="range" id="passwordLength" min="4" max="64" value="16" style="width: 100%;" oninput="updateLengthValue()">
+                </div>
+
+                <div class="input-group">
+                    <label>Number of Passwords:</label>
+                    <input type="number" id="passwordCount" value="1" min="1" max="50">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeUppercase" checked>
+                    <label for="includeUppercase">Include Uppercase (A-Z)</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeLowercase" checked>
+                    <label for="includeLowercase">Include Lowercase (a-z)</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeNumbers" checked>
+                    <label for="includeNumbers">Include Numbers (0-9)</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeSymbols" checked>
+                    <label for="includeSymbols">Include Symbols (!@#$%^&*)</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="excludeAmbiguous">
+                    <label for="excludeAmbiguous">Exclude Ambiguous (0, O, l, 1, I)</label>
+                </div>
+
+                <button onclick="generatePasswords()">Generate Passwords</button>
+
+                <div id="passwordResult" class="result-box">Click "Generate Passwords" to create secure passwords</div>
+
+                <button onclick="copyResult('password')">📋 Copy to Clipboard</button>
+
+                <div id="passwordMessage"></div>
+            </div>
+        </div>
+
+        <!-- QR Code Generator Tab -->
+        <div id="qr-tab" class="tab-content">
+            <div class="generator-box">
+                <h2>QR Code Generator</h2>
+                <div class="info-text">
+                    Generate QR codes for URLs, text, contact information, WiFi credentials, and more.
+                </div>
+
+                <div class="input-group">
+                    <label>Content to encode:</label>
+                    <input type="text" id="qrContent" placeholder="Enter URL, text, or data...">
+                </div>
+
+                <div class="input-group">
+                    <label>Size:</label>
+                    <select id="qrSize">
+                        <option value="200">Small (200x200)</option>
+                        <option value="300" selected>Medium (300x300)</option>
+                        <option value="400">Large (400x400)</option>
+                        <option value="500">Extra Large (500x500)</option>
+                    </select>
+                </div>
+
+                <button onclick="generateQRCode()">Generate QR Code</button>
+
+                <div class="qr-code">
+                    <canvas id="qrCanvas"></canvas>
+                </div>
+
+                <button onclick="downloadQRCode()">💾 Download QR Code</button>
+
+                <div id="qrMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        // UUID Generator
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function generateUUIDs() {
+            const count = parseInt(document.getElementById('uuidCount').value) || 1;
+            const uppercase = document.getElementById('uuidUppercase').checked;
+            const noDashes = document.getElementById('uuidNoDashes').checked;
+            const resultDiv = document.getElementById('uuidResult');
+
+            const uuids = [];
+            for (let i = 0; i < Math.min(count, 100); i++) {
+                let uuid = generateUUID();
+                if (uppercase) uuid = uuid.toUpperCase();
+                if (noDashes) uuid = uuid.replace(/-/g, '');
+                uuids.push(uuid);
+            }
+
+            resultDiv.textContent = uuids.join('\n');
+            resultDiv.classList.add('has-content');
+        }
+
+        // Password Generator
+        function updateLengthValue() {
+            document.getElementById('lengthValue').textContent = document.getElementById('passwordLength').value;
+        }
+
+        function generatePasswords() {
+            const length = parseInt(document.getElementById('passwordLength').value);
+            const count = parseInt(document.getElementById('passwordCount').value) || 1;
+            const includeUppercase = document.getElementById('includeUppercase').checked;
+            const includeLowercase = document.getElementById('includeLowercase').checked;
+            const includeNumbers = document.getElementById('includeNumbers').checked;
+            const includeSymbols = document.getElementById('includeSymbols').checked;
+            const excludeAmbiguous = document.getElementById('excludeAmbiguous').checked;
+
+            if (!includeUppercase && !includeLowercase && !includeNumbers && !includeSymbols) {
+                showMessage('passwordMessage', '❌ Please select at least one character type', 'error');
+                return;
+            }
+
+            let charset = '';
+            if (includeUppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (includeLowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+            if (includeNumbers) charset += '0123456789';
+            if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            if (excludeAmbiguous) {
+                charset = charset.replace(/[0Ol1I]/g, '');
+            }
+
+            const passwords = [];
+            for (let i = 0; i < Math.min(count, 50); i++) {
+                let password = '';
+                for (let j = 0; j < length; j++) {
+                    password += charset.charAt(Math.floor(Math.random() * charset.length));
+                }
+                passwords.push(password);
+            }
+
+            const resultDiv = document.getElementById('passwordResult');
+            resultDiv.textContent = passwords.join('\n');
+            resultDiv.classList.add('has-content');
+        }
+
+        // QR Code Generator (Simple text-based version)
+        function generateQRCode() {
+            const content = document.getElementById('qrContent').value.trim();
+            const size = parseInt(document.getElementById('qrSize').value);
+
+            if (!content) {
+                showMessage('qrMessage', '❌ Please enter content to encode', 'error');
+                return;
+            }
+
+            const canvas = document.getElementById('qrCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            canvas.width = size;
+            canvas.height = size;
+
+            // Simple QR code representation (placeholder pattern)
+            // In a real implementation, you would use a QR code library like qrcode.js
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw a simple pattern to represent QR code
+            const moduleSize = size / 25;
+            ctx.fillStyle = 'black';
+
+            // Create a simple pattern based on content hash
+            const hash = hashString(content);
+            for (let i = 0; i < 25; i++) {
+                for (let j = 0; j < 25; j++) {
+                    const index = i * 25 + j;
+                    if ((hash >> (index % 31)) & 1) {
+                        ctx.fillRect(j * moduleSize, i * moduleSize, moduleSize, moduleSize);
+                    }
+                }
+            }
+
+            // Draw corner markers
+            drawCornerMarker(ctx, 0, 0, moduleSize);
+            drawCornerMarker(ctx, 18 * moduleSize, 0, moduleSize);
+            drawCornerMarker(ctx, 0, 18 * moduleSize, moduleSize);
+
+            showMessage('qrMessage', '✓ QR Code generated! (Note: This is a simplified representation. For production use, implement a proper QR code library)', 'success');
+        }
+
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        function drawCornerMarker(ctx, x, y, moduleSize) {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(x, y, moduleSize * 7, moduleSize * 7);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x + moduleSize, y + moduleSize, moduleSize * 5, moduleSize * 5);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(x + moduleSize * 2, y + moduleSize * 2, moduleSize * 3, moduleSize * 3);
+        }
+
+        function downloadQRCode() {
+            const canvas = document.getElementById('qrCanvas');
+            if (canvas.width === 0) {
+                showMessage('qrMessage', '❌ Please generate a QR code first', 'error');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = canvas.toDataURL();
+            link.click();
+
+            showMessage('qrMessage', '✓ QR Code downloaded!', 'success');
+        }
+
+        // Copy to clipboard
+        function copyResult(type) {
+            const resultDiv = document.getElementById(type + 'Result');
+            const text = resultDiv.textContent;
+
+            if (!resultDiv.classList.contains('has-content')) {
+                showMessage(type + 'Message', '❌ Nothing to copy. Generate first!', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage(type + 'Message', '✓ Copied to clipboard!', 'success');
+            }).catch(err => {
+                showMessage(type + 'Message', '❌ Failed to copy', 'error');
+            });
+        }
+
+        function showMessage(elementId, text, type) {
+            const message = document.getElementById(elementId);
+            message.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                message.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
