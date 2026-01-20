@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Converters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .nav {
+            background: #34495e;
+            padding: 10px 30px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .converter-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h3 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .unit-converter {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .converter-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 5px solid #667eea;
+            margin-top: 20px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 10px;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 1024px) {
+            .converter-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 Data Converters</h1>
+        </header>
+
+        <div class="nav">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('format')">Format Converters</button>
+            <button class="tab" onclick="switchTab('length')">Length</button>
+            <button class="tab" onclick="switchTab('weight')">Weight</button>
+            <button class="tab" onclick="switchTab('temperature')">Temperature</button>
+            <button class="tab" onclick="switchTab('volume')">Volume</button>
+        </div>
+
+        <!-- Format Converters Tab -->
+        <div id="format-tab" class="tab-content active">
+            <div class="converter-section">
+                <div class="panel">
+                    <h3>Input Data</h3>
+                    <textarea id="formatInput" placeholder="Paste your data here..."></textarea>
+                    <div class="controls">
+                        <button onclick="convertFormat('json-csv')">JSON → CSV</button>
+                        <button onclick="convertFormat('csv-json')">CSV → JSON</button>
+                        <button onclick="convertFormat('json-xml')">JSON → XML</button>
+                        <button onclick="convertFormat('minify-json')">Minify JSON</button>
+                        <button onclick="convertFormat('prettify-json')">Prettify JSON</button>
+                    </div>
+                    <div id="formatMessage"></div>
+                </div>
+
+                <div class="panel">
+                    <h3>Output Data</h3>
+                    <textarea id="formatOutput" placeholder="Converted data will appear here..." readonly></textarea>
+                    <div class="controls">
+                        <button onclick="copyResult('format')">📋 Copy Result</button>
+                        <button onclick="clearFormat()">🗑️ Clear All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Length Converter Tab -->
+        <div id="length-tab" class="tab-content">
+            <div class="unit-converter">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">Length Converter</h2>
+                <div class="converter-grid">
+                    <div class="input-group">
+                        <label>From:</label>
+                        <input type="number" id="lengthValue" placeholder="Enter value" oninput="convertUnit('length')">
+                    </div>
+                    <div class="input-group">
+                        <label>Unit:</label>
+                        <select id="lengthFrom" onchange="convertUnit('length')">
+                            <option value="meters">Meters (m)</option>
+                            <option value="kilometers">Kilometers (km)</option>
+                            <option value="centimeters">Centimeters (cm)</option>
+                            <option value="millimeters">Millimeters (mm)</option>
+                            <option value="miles">Miles (mi)</option>
+                            <option value="yards">Yards (yd)</option>
+                            <option value="feet">Feet (ft)</option>
+                            <option value="inches">Inches (in)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>To:</label>
+                        <select id="lengthTo" onchange="convertUnit('length')">
+                            <option value="meters">Meters (m)</option>
+                            <option value="kilometers">Kilometers (km)</option>
+                            <option value="centimeters">Centimeters (cm)</option>
+                            <option value="millimeters">Millimeters (mm)</option>
+                            <option value="miles">Miles (mi)</option>
+                            <option value="yards">Yards (yd)</option>
+                            <option value="feet" selected>Feet (ft)</option>
+                            <option value="inches">Inches (in)</option>
+                        </select>
+                    </div>
+                    <div class="result-box">
+                        <div style="color: #666;">Result:</div>
+                        <div class="result-value" id="lengthResult">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight Converter Tab -->
+        <div id="weight-tab" class="tab-content">
+            <div class="unit-converter">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">Weight Converter</h2>
+                <div class="converter-grid">
+                    <div class="input-group">
+                        <label>From:</label>
+                        <input type="number" id="weightValue" placeholder="Enter value" oninput="convertUnit('weight')">
+                    </div>
+                    <div class="input-group">
+                        <label>Unit:</label>
+                        <select id="weightFrom" onchange="convertUnit('weight')">
+                            <option value="kilograms">Kilograms (kg)</option>
+                            <option value="grams">Grams (g)</option>
+                            <option value="milligrams">Milligrams (mg)</option>
+                            <option value="metric_tons">Metric Tons (t)</option>
+                            <option value="pounds">Pounds (lb)</option>
+                            <option value="ounces">Ounces (oz)</option>
+                            <option value="tons">Tons (US)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>To:</label>
+                        <select id="weightTo" onchange="convertUnit('weight')">
+                            <option value="kilograms">Kilograms (kg)</option>
+                            <option value="grams">Grams (g)</option>
+                            <option value="milligrams">Milligrams (mg)</option>
+                            <option value="metric_tons">Metric Tons (t)</option>
+                            <option value="pounds" selected>Pounds (lb)</option>
+                            <option value="ounces">Ounces (oz)</option>
+                            <option value="tons">Tons (US)</option>
+                        </select>
+                    </div>
+                    <div class="result-box">
+                        <div style="color: #666;">Result:</div>
+                        <div class="result-value" id="weightResult">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature Converter Tab -->
+        <div id="temperature-tab" class="tab-content">
+            <div class="unit-converter">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">Temperature Converter</h2>
+                <div class="converter-grid">
+                    <div class="input-group">
+                        <label>From:</label>
+                        <input type="number" id="tempValue" placeholder="Enter value" oninput="convertUnit('temperature')">
+                    </div>
+                    <div class="input-group">
+                        <label>Unit:</label>
+                        <select id="tempFrom" onchange="convertUnit('temperature')">
+                            <option value="celsius">Celsius (°C)</option>
+                            <option value="fahrenheit">Fahrenheit (°F)</option>
+                            <option value="kelvin">Kelvin (K)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>To:</label>
+                        <select id="tempTo" onchange="convertUnit('temperature')">
+                            <option value="celsius">Celsius (°C)</option>
+                            <option value="fahrenheit" selected>Fahrenheit (°F)</option>
+                            <option value="kelvin">Kelvin (K)</option>
+                        </select>
+                    </div>
+                    <div class="result-box">
+                        <div style="color: #666;">Result:</div>
+                        <div class="result-value" id="tempResult">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Volume Converter Tab -->
+        <div id="volume-tab" class="tab-content">
+            <div class="unit-converter">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">Volume Converter</h2>
+                <div class="converter-grid">
+                    <div class="input-group">
+                        <label>From:</label>
+                        <input type="number" id="volumeValue" placeholder="Enter value" oninput="convertUnit('volume')">
+                    </div>
+                    <div class="input-group">
+                        <label>Unit:</label>
+                        <select id="volumeFrom" onchange="convertUnit('volume')">
+                            <option value="liters">Liters (L)</option>
+                            <option value="milliliters">Milliliters (mL)</option>
+                            <option value="cubic_meters">Cubic Meters (m³)</option>
+                            <option value="gallons">Gallons (US)</option>
+                            <option value="quarts">Quarts (US)</option>
+                            <option value="pints">Pints (US)</option>
+                            <option value="cups">Cups (US)</option>
+                            <option value="fluid_ounces">Fluid Ounces (fl oz)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>To:</label>
+                        <select id="volumeTo" onchange="convertUnit('volume')">
+                            <option value="liters">Liters (L)</option>
+                            <option value="milliliters">Milliliters (mL)</option>
+                            <option value="cubic_meters">Cubic Meters (m³)</option>
+                            <option value="gallons" selected>Gallons (US)</option>
+                            <option value="quarts">Quarts (US)</option>
+                            <option value="pints">Pints (US)</option>
+                            <option value="cups">Cups (US)</option>
+                            <option value="fluid_ounces">Fluid Ounces (fl oz)</option>
+                        </select>
+                    </div>
+                    <div class="result-box">
+                        <div style="color: #666;">Result:</div>
+                        <div class="result-value" id="volumeResult">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        // Format conversions
+        function convertFormat(type) {
+            const input = document.getElementById('formatInput').value.trim();
+            const output = document.getElementById('formatOutput');
+            const message = document.getElementById('formatMessage');
+
+            message.innerHTML = '';
+
+            if (!input) {
+                showMessage('formatMessage', '❌ Please enter some data', 'error');
+                return;
+            }
+
+            try {
+                let result = '';
+                switch(type) {
+                    case 'json-csv':
+                        const jsonData = JSON.parse(input);
+                        result = jsonToCSV(jsonData);
+                        break;
+                    case 'csv-json':
+                        result = JSON.stringify(csvToJSON(input), null, 2);
+                        break;
+                    case 'json-xml':
+                        const json = JSON.parse(input);
+                        result = jsonToXML(json);
+                        break;
+                    case 'minify-json':
+                        result = JSON.stringify(JSON.parse(input));
+                        break;
+                    case 'prettify-json':
+                        result = JSON.stringify(JSON.parse(input), null, 2);
+                        break;
+                }
+                output.value = result;
+                showMessage('formatMessage', '✓ Conversion successful!', 'success');
+            } catch (error) {
+                showMessage('formatMessage', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function jsonToCSV(json) {
+            const array = Array.isArray(json) ? json : [json];
+            if (array.length === 0) return '';
+
+            const headers = Object.keys(array[0]);
+            const rows = array.map(obj => headers.map(h => JSON.stringify(obj[h] || '')).join(','));
+            return [headers.join(','), ...rows].join('\n');
+        }
+
+        function csvToJSON(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const values = line.split(',').map(v => v.trim());
+                return headers.reduce((obj, header, i) => {
+                    try {
+                        obj[header] = JSON.parse(values[i]);
+                    } catch {
+                        obj[header] = values[i];
+                    }
+                    return obj;
+                }, {});
+            });
+        }
+
+        function jsonToXML(obj, rootName = 'root') {
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+
+            function objectToXML(obj, name) {
+                if (Array.isArray(obj)) {
+                    return obj.map(item => objectToXML(item, name)).join('');
+                } else if (typeof obj === 'object' && obj !== null) {
+                    let result = `<${name}>`;
+                    for (let key in obj) {
+                        result += objectToXML(obj[key], key);
+                    }
+                    result += `</${name}>`;
+                    return result;
+                } else {
+                    return `<${name}>${obj}</${name}>`;
+                }
+            }
+
+            return xml + objectToXML(obj, rootName);
+        }
+
+        // Unit conversions
+        const lengthUnits = {
+            meters: 1,
+            kilometers: 0.001,
+            centimeters: 100,
+            millimeters: 1000,
+            miles: 0.000621371,
+            yards: 1.09361,
+            feet: 3.28084,
+            inches: 39.3701
+        };
+
+        const weightUnits = {
+            kilograms: 1,
+            grams: 1000,
+            milligrams: 1000000,
+            metric_tons: 0.001,
+            pounds: 2.20462,
+            ounces: 35.274,
+            tons: 0.00110231
+        };
+
+        const volumeUnits = {
+            liters: 1,
+            milliliters: 1000,
+            cubic_meters: 0.001,
+            gallons: 0.264172,
+            quarts: 1.05669,
+            pints: 2.11338,
+            cups: 4.22675,
+            fluid_ounces: 33.814
+        };
+
+        function convertUnit(type) {
+            const value = parseFloat(document.getElementById(type + 'Value').value);
+            const from = document.getElementById(type + 'From').value;
+            const to = document.getElementById(type + 'To').value;
+            const result = document.getElementById(type + 'Result');
+
+            if (isNaN(value)) {
+                result.textContent = '0';
+                return;
+            }
+
+            let converted = 0;
+
+            if (type === 'length') {
+                converted = value / lengthUnits[from] * lengthUnits[to];
+            } else if (type === 'weight') {
+                converted = value / weightUnits[from] * weightUnits[to];
+            } else if (type === 'temperature') {
+                // Temperature conversion requires special handling
+                let celsius = 0;
+                if (from === 'celsius') celsius = value;
+                else if (from === 'fahrenheit') celsius = (value - 32) * 5/9;
+                else if (from === 'kelvin') celsius = value - 273.15;
+
+                if (to === 'celsius') converted = celsius;
+                else if (to === 'fahrenheit') converted = celsius * 9/5 + 32;
+                else if (to === 'kelvin') converted = celsius + 273.15;
+            } else if (type === 'volume') {
+                converted = value / volumeUnits[from] * volumeUnits[to];
+            }
+
+            result.textContent = converted.toFixed(6).replace(/\.?0+$/, '');
+        }
+
+        function copyResult(type) {
+            const output = document.getElementById(type + 'Output').value;
+            if (!output || output === 'Converted data will appear here...') {
+                showMessage(type + 'Message', '❌ Nothing to copy', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(output).then(() => {
+                showMessage(type + 'Message', '✓ Copied to clipboard!', 'success');
+            }).catch(err => {
+                showMessage(type + 'Message', '❌ Failed to copy', 'error');
+            });
+        }
+
+        function clearFormat() {
+            document.getElementById('formatInput').value = '';
+            document.getElementById('formatOutput').value = '';
+            document.getElementById('formatMessage').innerHTML = '';
+        }
+
+        function showMessage(elementId, text, type) {
+            const message = document.getElementById(elementId);
+            message.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                message.innerHTML = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -12,17 +12,43 @@ Visit our [GitHub Pages site](https://liuchaoqun.github.io/simple_tools/) to acc
 
 ## Available Tools
 
-Currently, this repository is being set up. Tools will be added soon!
+Visit our [GitHub Pages site](https://liuchaoqun.github.io/simple_tools/) to access these tools:
 
-## Planned Tools
+### 🔍 JSON Viewer
+Format, validate, and view JSON data with syntax highlighting. Perfect for debugging and working with APIs.
 
-Here are some tools we're planning to add:
+### 📝 Text Utilities
+Comprehensive text manipulation tools including:
+- Case conversion (uppercase, lowercase, title case, camelCase, snake_case, kebab-case)
+- Text operations (reverse, remove spaces, sort lines, extract emails/URLs)
+- Encoding/decoding (URL, HTML, Unicode)
+- Real-time character, word, and line counting
 
-- **Text Utilities**: String manipulation, encoding/decoding, formatting
-- **Data Converters**: JSON/CSV/XML converters, unit converters
-- **Generators**: UUID generator, password generator, QR code generator
-- **Calculators**: Time zone converter, date calculator, math utilities
-- **Developers Tools**: Base64 encoder/decoder, hash generator, regex tester
+### 🔄 Data Converters
+- **Format Converters**: Convert between JSON, CSV, and XML
+- **Unit Converters**: Length, weight, temperature, and volume conversions
+
+### ⚡ Generators
+- **UUID Generator**: Generate UUIDs v4 with customization options
+- **Password Generator**: Create secure passwords with customizable length and character sets
+- **QR Code Generator**: Generate QR codes for URLs and text
+
+### 🧮 Calculators
+- **Time Zone Converter**: Convert time between different time zones
+- **Date Calculator**: Calculate differences between dates and add/subtract days
+- **Percentage Calculator**: Various percentage calculations
+- **Age Calculator**: Calculate exact age and time between dates
+- **Basic Math**: Perform operations on multiple numbers
+
+### 💻 Developer Tools
+- **Base64 Encoder/Decoder**: Encode and decode Base64 strings
+- **Hash Generator**: Generate SHA-256, SHA-512, SHA-1 hashes
+- **Regex Tester**: Test and debug regular expressions with live matching
+
+### 🎨 Design Tools
+- **Color Picker**: Pick colors and get values in HEX, RGB, RGBA, and HSL formats
+- **Gradient Generator**: Create beautiful CSS gradients with live preview
+- **Box Shadow Generator**: Design CSS box shadows visually
 
 ## Contributing
 

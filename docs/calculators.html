@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculators</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .nav {
+            background: #34495e;
+            padding: 10px 30px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .calculator-box {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .calculator-box h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            background: #667eea;
+            color: white;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 5px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .timezone-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .timezone-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .timezone-name {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timezone-time {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .date-result {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .percentage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .percentage-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧮 Calculators</h1>
+        </header>
+
+        <div class="nav">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('timezone')">Time Zone</button>
+            <button class="tab" onclick="switchTab('date')">Date Calculator</button>
+            <button class="tab" onclick="switchTab('percentage')">Percentage</button>
+            <button class="tab" onclick="switchTab('age')">Age Calculator</button>
+            <button class="tab" onclick="switchTab('math')">Basic Math</button>
+        </div>
+
+        <!-- Time Zone Converter Tab -->
+        <div id="timezone-tab" class="tab-content active">
+            <div class="calculator-box">
+                <h2>Time Zone Converter</h2>
+                <div class="info-text">
+                    Convert time between different time zones. Current time is automatically updated.
+                </div>
+
+                <div class="input-group">
+                    <label>Select Date & Time:</label>
+                    <input type="datetime-local" id="sourceTime">
+                </div>
+
+                <div class="input-group">
+                    <label>From Time Zone:</label>
+                    <select id="sourceTimezone">
+                        <option value="UTC">UTC</option>
+                        <option value="America/New_York">Eastern Time (ET)</option>
+                        <option value="America/Chicago">Central Time (CT)</option>
+                        <option value="America/Denver">Mountain Time (MT)</option>
+                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                        <option value="Europe/London">London (GMT/BST)</option>
+                        <option value="Europe/Paris">Paris (CET/CEST)</option>
+                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                        <option value="Asia/Shanghai">Shanghai (CST)</option>
+                        <option value="Asia/Dubai">Dubai (GST)</option>
+                        <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                    </select>
+                </div>
+
+                <button onclick="convertTimezone()">Convert Time</button>
+
+                <div class="timezone-grid" id="timezoneResults"></div>
+            </div>
+        </div>
+
+        <!-- Date Calculator Tab -->
+        <div id="date-tab" class="tab-content">
+            <div class="calculator-box">
+                <h2>Date Calculator</h2>
+                <div class="info-text">
+                    Calculate the difference between two dates or add/subtract days from a date.
+                </div>
+
+                <div class="input-group">
+                    <label>Start Date:</label>
+                    <input type="date" id="startDate">
+                </div>
+
+                <div class="input-group">
+                    <label>End Date:</label>
+                    <input type="date" id="endDate">
+                </div>
+
+                <button onclick="calculateDateDifference()">Calculate Difference</button>
+
+                <div class="result-box" id="dateResult" style="display: none;">
+                    <div class="result-label">Time Difference:</div>
+                    <div id="dateDiffText"></div>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Add/Subtract Days</h3>
+
+                <div class="input-group">
+                    <label>Date:</label>
+                    <input type="date" id="baseDate">
+                </div>
+
+                <div class="input-group">
+                    <label>Days to Add/Subtract:</label>
+                    <input type="number" id="daysOffset" placeholder="Enter positive or negative number">
+                </div>
+
+                <button onclick="calculateDateOffset()">Calculate New Date</button>
+
+                <div class="result-box" id="offsetResult" style="display: none;">
+                    <div class="result-label">Result Date:</div>
+                    <div class="result-value" id="offsetDateText"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Percentage Calculator Tab -->
+        <div id="percentage-tab" class="tab-content">
+            <div class="calculator-box">
+                <h2>Percentage Calculator</h2>
+                <div class="info-text">
+                    Calculate percentages, percentage changes, and more.
+                </div>
+
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">What is X% of Y?</h3>
+                <div class="percentage-grid">
+                    <div class="input-group">
+                        <input type="number" id="percent1" placeholder="Percentage">
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="value1" placeholder="Value">
+                    </div>
+                </div>
+                <button onclick="calculatePercentOf()">Calculate</button>
+                <div class="result-box" id="percentOfResult" style="display: none;">
+                    <div class="result-value" id="percentOfValue"></div>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">X is what % of Y?</h3>
+                <div class="percentage-grid">
+                    <div class="input-group">
+                        <input type="number" id="part1" placeholder="Part (X)">
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="whole1" placeholder="Whole (Y)">
+                    </div>
+                </div>
+                <button onclick="calculateWhatPercent()">Calculate</button>
+                <div class="result-box" id="whatPercentResult" style="display: none;">
+                    <div class="result-value" id="whatPercentValue"></div>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Percentage Change</h3>
+                <div class="percentage-grid">
+                    <div class="input-group">
+                        <input type="number" id="oldValue" placeholder="Old Value">
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="newValue" placeholder="New Value">
+                    </div>
+                </div>
+                <button onclick="calculatePercentChange()">Calculate</button>
+                <div class="result-box" id="percentChangeResult" style="display: none;">
+                    <div class="result-value" id="percentChangeValue"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Age Calculator Tab -->
+        <div id="age-tab" class="tab-content">
+            <div class="calculator-box">
+                <h2>Age Calculator</h2>
+                <div class="info-text">
+                    Calculate your exact age or time between any two dates.
+                </div>
+
+                <div class="input-group">
+                    <label>Date of Birth:</label>
+                    <input type="date" id="birthDate">
+                </div>
+
+                <div class="input-group">
+                    <label>Calculate Age As Of:</label>
+                    <input type="date" id="ageAsOf">
+                </div>
+
+                <button onclick="calculateAge()">Calculate Age</button>
+
+                <div id="ageResults" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- Basic Math Calculator Tab -->
+        <div id="math-tab" class="tab-content">
+            <div class="calculator-box">
+                <h2>Basic Math Calculator</h2>
+                <div class="info-text">
+                    Perform basic arithmetic operations with multiple numbers.
+                </div>
+
+                <div class="input-group">
+                    <label>Enter Numbers (comma-separated):</label>
+                    <input type="text" id="mathNumbers" placeholder="e.g., 10, 20, 30, 40">
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <button onclick="performMath('sum')">Sum</button>
+                    <button onclick="performMath('average')">Average</button>
+                    <button onclick="performMath('min')">Minimum</button>
+                    <button onclick="performMath('max')">Maximum</button>
+                </div>
+
+                <div class="result-box" id="mathResult" style="display: none;">
+                    <div class="result-label" id="mathLabel"></div>
+                    <div class="result-value" id="mathValue"></div>
+                </div>
+
+                <div id="mathStats" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize current time
+        window.onload = function() {
+            const now = new Date();
+            document.getElementById('sourceTime').value = now.toISOString().slice(0, 16);
+            document.getElementById('startDate').value = now.toISOString().slice(0, 10);
+            document.getElementById('endDate').value = now.toISOString().slice(0, 10);
+            document.getElementById('baseDate').value = now.toISOString().slice(0, 10);
+            document.getElementById('birthDate').value = '2000-01-01';
+            document.getElementById('ageAsOf').value = now.toISOString().slice(0, 10);
+        };
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        // Time Zone Converter
+        function convertTimezone() {
+            const sourceTime = document.getElementById('sourceTime').value;
+            const sourceTimezone = document.getElementById('sourceTimezone').value;
+
+            if (!sourceTime) {
+                alert('Please select a date and time');
+                return;
+            }
+
+            const date = new Date(sourceTime);
+            const timezones = [
+                { name: 'UTC', tz: 'UTC' },
+                { name: 'Eastern Time (ET)', tz: 'America/New_York' },
+                { name: 'Central Time (CT)', tz: 'America/Chicago' },
+                { name: 'Pacific Time (PT)', tz: 'America/Los_Angeles' },
+                { name: 'London (GMT/BST)', tz: 'Europe/London' },
+                { name: 'Paris (CET/CEST)', tz: 'Europe/Paris' },
+                { name: 'Tokyo (JST)', tz: 'Asia/Tokyo' },
+                { name: 'Shanghai (CST)', tz: 'Asia/Shanghai' },
+                { name: 'Sydney (AEDT/AEST)', tz: 'Australia/Sydney' }
+            ];
+
+            const results = document.getElementById('timezoneResults');
+            results.innerHTML = '';
+
+            timezones.forEach(tz => {
+                const converted = new Date(date.toLocaleString('en-US', { timeZone: tz.tz }));
+                const timeString = converted.toLocaleString('en-US', {
+                    timeZone: tz.tz,
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                });
+
+                results.innerHTML += `
+                    <div class="timezone-item">
+                        <div class="timezone-name">${tz.name}</div>
+                        <div class="timezone-time">${timeString}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Date Calculator
+        function calculateDateDifference() {
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+
+            if (isNaN(start) || isNaN(end)) {
+                alert('Please select valid dates');
+                return;
+            }
+
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffWeeks = Math.floor(diffDays / 7);
+            const diffMonths = Math.floor(diffDays / 30.44);
+            const diffYears = Math.floor(diffDays / 365.25);
+
+            const resultBox = document.getElementById('dateResult');
+            const resultText = document.getElementById('dateDiffText');
+
+            resultText.innerHTML = `
+                <div class="date-result"><strong>${diffDays}</strong> days</div>
+                <div class="date-result"><strong>${diffWeeks}</strong> weeks</div>
+                <div class="date-result"><strong>${diffMonths}</strong> months</div>
+                <div class="date-result"><strong>${diffYears}</strong> years</div>
+            `;
+
+            resultBox.style.display = 'block';
+        }
+
+        function calculateDateOffset() {
+            const baseDate = new Date(document.getElementById('baseDate').value);
+            const offset = parseInt(document.getElementById('daysOffset').value) || 0;
+
+            if (isNaN(baseDate)) {
+                alert('Please select a valid date');
+                return;
+            }
+
+            const resultDate = new Date(baseDate);
+            resultDate.setDate(resultDate.getDate() + offset);
+
+            const resultBox = document.getElementById('offsetResult');
+            const resultText = document.getElementById('offsetDateText');
+
+            resultText.textContent = resultDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            resultBox.style.display = 'block';
+        }
+
+        // Percentage Calculators
+        function calculatePercentOf() {
+            const percent = parseFloat(document.getElementById('percent1').value);
+            const value = parseFloat(document.getElementById('value1').value);
+
+            if (isNaN(percent) || isNaN(value)) return;
+
+            const result = (percent / 100) * value;
+            document.getElementById('percentOfValue').textContent =
+                `${percent}% of ${value} = ${result.toFixed(2)}`;
+            document.getElementById('percentOfResult').style.display = 'block';
+        }
+
+        function calculateWhatPercent() {
+            const part = parseFloat(document.getElementById('part1').value);
+            const whole = parseFloat(document.getElementById('whole1').value);
+
+            if (isNaN(part) || isNaN(whole) || whole === 0) return;
+
+            const percent = (part / whole) * 100;
+            document.getElementById('whatPercentValue').textContent =
+                `${part} is ${percent.toFixed(2)}% of ${whole}`;
+            document.getElementById('whatPercentResult').style.display = 'block';
+        }
+
+        function calculatePercentChange() {
+            const oldVal = parseFloat(document.getElementById('oldValue').value);
+            const newVal = parseFloat(document.getElementById('newValue').value);
+
+            if (isNaN(oldVal) || isNaN(newVal) || oldVal === 0) return;
+
+            const change = ((newVal - oldVal) / oldVal) * 100;
+            const direction = change >= 0 ? 'increase' : 'decrease';
+            document.getElementById('percentChangeValue').textContent =
+                `${Math.abs(change).toFixed(2)}% ${direction}`;
+            document.getElementById('percentChangeResult').style.display = 'block';
+        }
+
+        // Age Calculator
+        function calculateAge() {
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            const ageAsOf = new Date(document.getElementById('ageAsOf').value);
+
+            if (isNaN(birthDate) || isNaN(ageAsOf)) {
+                alert('Please select valid dates');
+                return;
+            }
+
+            const diffTime = ageAsOf - birthDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffWeeks = Math.floor(diffDays / 7);
+            const diffMonths = Math.floor(diffDays / 30.44);
+            const years = Math.floor(diffDays / 365.25);
+            const months = Math.floor((diffDays % 365.25) / 30.44);
+            const days = Math.floor((diffDays % 365.25) % 30.44);
+
+            const results = document.getElementById('ageResults');
+            results.innerHTML = `
+                <div class="result-box">
+                    <div class="result-label">Age:</div>
+                    <div class="result-value">${years} years, ${months} months, ${days} days</div>
+                </div>
+                <div class="date-result"><strong>${diffDays.toLocaleString()}</strong> total days</div>
+                <div class="date-result"><strong>${diffWeeks.toLocaleString()}</strong> total weeks</div>
+                <div class="date-result"><strong>${diffMonths.toLocaleString()}</strong> total months</div>
+                <div class="date-result"><strong>${(diffDays * 24).toLocaleString()}</strong> total hours</div>
+            `;
+        }
+
+        // Basic Math Calculator
+        function performMath(operation) {
+            const input = document.getElementById('mathNumbers').value;
+            const numbers = input.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+
+            if (numbers.length === 0) {
+                alert('Please enter valid numbers');
+                return;
+            }
+
+            let result;
+            let label;
+
+            switch(operation) {
+                case 'sum':
+                    result = numbers.reduce((a, b) => a + b, 0);
+                    label = 'Sum:';
+                    break;
+                case 'average':
+                    result = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+                    label = 'Average:';
+                    break;
+                case 'min':
+                    result = Math.min(...numbers);
+                    label = 'Minimum:';
+                    break;
+                case 'max':
+                    result = Math.max(...numbers);
+                    label = 'Maximum:';
+                    break;
+            }
+
+            document.getElementById('mathLabel').textContent = label;
+            document.getElementById('mathValue').textContent = result.toFixed(2);
+            document.getElementById('mathResult').style.display = 'block';
+
+            // Show statistics
+            const sum = numbers.reduce((a, b) => a + b, 0);
+            const avg = sum / numbers.length;
+            const sorted = [...numbers].sort((a, b) => a - b);
+            const median = numbers.length % 2 === 0 ?
+                (sorted[numbers.length / 2 - 1] + sorted[numbers.length / 2]) / 2 :
+                sorted[Math.floor(numbers.length / 2)];
+
+            document.getElementById('mathStats').innerHTML = `
+                <div class="info-text">
+                    <strong>Statistics:</strong><br>
+                    Count: ${numbers.length}<br>
+                    Sum: ${sum.toFixed(2)}<br>
+                    Average: ${avg.toFixed(2)}<br>
+                    Median: ${median.toFixed(2)}<br>
+                    Min: ${Math.min(...numbers).toFixed(2)}<br>
+                    Max: ${Math.max(...numbers).toFixed(2)}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

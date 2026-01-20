@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .nav {
+            background: #34495e;
+            padding: 10px 30px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tool-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h3 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .regex-tester {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .flags {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .flag-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .matches {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #e0e0e0;
+            margin-top: 20px;
+            min-height: 200px;
+        }
+
+        .match-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+        }
+
+        .match-index {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .match-text {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .no-matches {
+            color: #999;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .hash-results {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #e0e0e0;
+            margin-top: 20px;
+        }
+
+        .hash-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .hash-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .hash-value {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #2c3e50;
+            word-break: break-all;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 1024px) {
+            .tool-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💻 Developer Tools</h1>
+        </header>
+
+        <div class="nav">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('base64')">Base64</button>
+            <button class="tab" onclick="switchTab('hash')">Hash Generator</button>
+            <button class="tab" onclick="switchTab('regex')">Regex Tester</button>
+        </div>
+
+        <!-- Base64 Encoder/Decoder Tab -->
+        <div id="base64-tab" class="tab-content active">
+            <div class="tool-section">
+                <div class="panel">
+                    <h3>Input</h3>
+                    <textarea id="base64Input" placeholder="Enter text or Base64 string..."></textarea>
+                    <div class="controls">
+                        <button onclick="encodeBase64()">Encode to Base64</button>
+                        <button onclick="decodeBase64()">Decode from Base64</button>
+                        <button onclick="copyResult('base64')">📋 Copy Result</button>
+                        <button onclick="clearBase64()">🗑️ Clear</button>
+                    </div>
+                    <div id="base64Message"></div>
+                </div>
+
+                <div class="panel">
+                    <h3>Output</h3>
+                    <textarea id="base64Output" placeholder="Result will appear here..." readonly></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hash Generator Tab -->
+        <div id="hash-tab" class="tab-content">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="info-text">
+                    Generate cryptographic hashes from your input text. Hashes are one-way functions commonly used for data integrity verification.
+                </div>
+
+                <div class="input-group">
+                    <label>Input Text:</label>
+                    <textarea id="hashInput" placeholder="Enter text to hash..." style="min-height: 150px;"></textarea>
+                </div>
+
+                <button onclick="generateHashes()" style="width: 100%; margin-bottom: 20px;">Generate Hashes</button>
+
+                <div class="hash-results" id="hashResults">
+                    <div class="no-matches">Enter text and click "Generate Hashes" to see results</div>
+                </div>
+
+                <div id="hashMessage"></div>
+            </div>
+        </div>
+
+        <!-- Regex Tester Tab -->
+        <div id="regex-tab" class="tab-content">
+            <div class="regex-tester">
+                <div class="info-text">
+                    Test regular expressions against sample text. See matches, groups, and validate your patterns.
+                </div>
+
+                <div class="input-group">
+                    <label>Regular Expression:</label>
+                    <input type="text" id="regexPattern" placeholder="e.g., \d{3}-\d{3}-\d{4}">
+                </div>
+
+                <div class="input-group">
+                    <label>Flags:</label>
+                    <div class="flags">
+                        <div class="flag-option">
+                            <input type="checkbox" id="flagG" checked>
+                            <label for="flagG">g (global)</label>
+                        </div>
+                        <div class="flag-option">
+                            <input type="checkbox" id="flagI">
+                            <label for="flagI">i (case insensitive)</label>
+                        </div>
+                        <div class="flag-option">
+                            <input type="checkbox" id="flagM">
+                            <label for="flagM">m (multiline)</label>
+                        </div>
+                        <div class="flag-option">
+                            <input type="checkbox" id="flagS">
+                            <label for="flagS">s (dotAll)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Test String:</label>
+                    <textarea id="regexTest" placeholder="Enter text to test against the regex..."></textarea>
+                </div>
+
+                <button onclick="testRegex()" style="width: 100%;">Test Regex</button>
+
+                <div class="matches" id="regexMatches">
+                    <div class="no-matches">Enter a regex pattern and test string to see matches</div>
+                </div>
+
+                <div id="regexMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        // Base64 Encoder/Decoder
+        function encodeBase64() {
+            const input = document.getElementById('base64Input').value;
+            const output = document.getElementById('base64Output');
+
+            if (!input) {
+                showMessage('base64Message', '❌ Please enter text to encode', 'error');
+                return;
+            }
+
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(input)));
+                output.value = encoded;
+                showMessage('base64Message', '✓ Text encoded to Base64', 'success');
+            } catch (error) {
+                showMessage('base64Message', '❌ Error encoding: ' + error.message, 'error');
+            }
+        }
+
+        function decodeBase64() {
+            const input = document.getElementById('base64Input').value;
+            const output = document.getElementById('base64Output');
+
+            if (!input) {
+                showMessage('base64Message', '❌ Please enter Base64 string to decode', 'error');
+                return;
+            }
+
+            try {
+                const decoded = decodeURIComponent(escape(atob(input)));
+                output.value = decoded;
+                showMessage('base64Message', '✓ Base64 decoded successfully', 'success');
+            } catch (error) {
+                showMessage('base64Message', '❌ Error decoding: Invalid Base64 string', 'error');
+            }
+        }
+
+        function clearBase64() {
+            document.getElementById('base64Input').value = '';
+            document.getElementById('base64Output').value = '';
+            document.getElementById('base64Message').innerHTML = '';
+        }
+
+        function copyResult(type) {
+            const output = document.getElementById(type + 'Output').value;
+            if (!output) {
+                showMessage(type + 'Message', '❌ Nothing to copy', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(output).then(() => {
+                showMessage(type + 'Message', '✓ Copied to clipboard!', 'success');
+            }).catch(err => {
+                showMessage(type + 'Message', '❌ Failed to copy', 'error');
+            });
+        }
+
+        // Hash Generator
+        async function generateHashes() {
+            const input = document.getElementById('hashInput').value;
+            const results = document.getElementById('hashResults');
+
+            if (!input) {
+                results.innerHTML = '<div class="no-matches">Please enter text to hash</div>';
+                return;
+            }
+
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+
+            try {
+                // Generate SHA-256
+                const sha256Buffer = await crypto.subtle.digest('SHA-256', data);
+                const sha256 = bufferToHex(sha256Buffer);
+
+                // Generate SHA-512
+                const sha512Buffer = await crypto.subtle.digest('SHA-512', data);
+                const sha512 = bufferToHex(sha512Buffer);
+
+                // Generate SHA-1
+                const sha1Buffer = await crypto.subtle.digest('SHA-1', data);
+                const sha1 = bufferToHex(sha1Buffer);
+
+                // Generate simple MD5-like hash (not cryptographic MD5, but a simple hash)
+                const simpleHash = simpleHashFunction(input);
+
+                results.innerHTML = `
+                    <div class="hash-item">
+                        <div class="hash-label">SHA-256</div>
+                        <div class="hash-value">${sha256}</div>
+                    </div>
+                    <div class="hash-item">
+                        <div class="hash-label">SHA-512</div>
+                        <div class="hash-value">${sha512}</div>
+                    </div>
+                    <div class="hash-item">
+                        <div class="hash-label">SHA-1 (deprecated, for compatibility only)</div>
+                        <div class="hash-value">${sha1}</div>
+                    </div>
+                    <div class="hash-item">
+                        <div class="hash-label">Simple Hash (32-bit)</div>
+                        <div class="hash-value">${simpleHash}</div>
+                    </div>
+                `;
+
+                showMessage('hashMessage', '✓ Hashes generated successfully', 'success');
+            } catch (error) {
+                showMessage('hashMessage', '❌ Error generating hashes: ' + error.message, 'error');
+            }
+        }
+
+        function bufferToHex(buffer) {
+            return Array.from(new Uint8Array(buffer))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        function simpleHashFunction(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return (hash >>> 0).toString(16).padStart(8, '0');
+        }
+
+        // Regex Tester
+        function testRegex() {
+            const pattern = document.getElementById('regexPattern').value;
+            const testString = document.getElementById('regexTest').value;
+            const results = document.getElementById('regexMatches');
+
+            if (!pattern) {
+                showMessage('regexMessage', '❌ Please enter a regex pattern', 'error');
+                return;
+            }
+
+            if (!testString) {
+                showMessage('regexMessage', '❌ Please enter test string', 'error');
+                return;
+            }
+
+            try {
+                let flags = '';
+                if (document.getElementById('flagG').checked) flags += 'g';
+                if (document.getElementById('flagI').checked) flags += 'i';
+                if (document.getElementById('flagM').checked) flags += 'm';
+                if (document.getElementById('flagS').checked) flags += 's';
+
+                const regex = new RegExp(pattern, flags);
+                const matches = [...testString.matchAll(regex)];
+
+                if (matches.length === 0) {
+                    results.innerHTML = '<div class="no-matches">No matches found</div>';
+                    showMessage('regexMessage', 'ℹ️ No matches found', 'error');
+                    return;
+                }
+
+                let html = `<div style="color: #2c3e50; font-weight: bold; margin-bottom: 15px;">
+                    Found ${matches.length} match${matches.length > 1 ? 'es' : ''}
+                </div>`;
+
+                matches.forEach((match, index) => {
+                    html += `
+                        <div class="match-item">
+                            <div class="match-index">Match ${index + 1} (Index: ${match.index})</div>
+                            <div class="match-text">${escapeHtml(match[0])}</div>
+                            ${match.length > 1 ? '<div style="margin-top: 5px; font-size: 12px; color: #666;">Groups: ' +
+                                match.slice(1).map((g, i) => `Group ${i + 1}: ${escapeHtml(g || '')}`).join(', ') + '</div>' : ''}
+                        </div>
+                    `;
+                });
+
+                results.innerHTML = html;
+                showMessage('regexMessage', `✓ Found ${matches.length} match${matches.length > 1 ? 'es' : ''}`, 'success');
+            } catch (error) {
+                showMessage('regexMessage', '❌ Invalid regex: ' + error.message, 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showMessage(elementId, text, type) {
+            const message = document.getElementById(elementId);
+            message.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                message.innerHTML = '';
+            }, 3000);
+        }
+
+        // Auto-test regex on input
+        document.getElementById('regexPattern')?.addEventListener('input', () => {
+            if (document.getElementById('regexTest').value) {
+                testRegex();
+            }
+        });
+
+        document.getElementById('regexTest')?.addEventListener('input', () => {
+            if (document.getElementById('regexPattern').value) {
+                testRegex();
+            }
+        });
+    </script>
+</body>
+</html>

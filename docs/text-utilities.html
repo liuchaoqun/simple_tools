@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Utilities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .nav {
+            background: #34495e;
+            padding: 10px 30px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .operations {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .operation-group {
+            margin-bottom: 20px;
+        }
+
+        .operation-group h3 {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Text Utilities</h1>
+        </header>
+
+        <div class="nav">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+        <div class="content">
+            <div class="panel">
+                <h2>Input Text</h2>
+                <textarea id="inputText" placeholder="Enter your text here..."></textarea>
+                <div class="stats" id="stats"></div>
+            </div>
+
+            <div class="panel">
+                <div class="operation-group">
+                    <h3>Case Conversion</h3>
+                    <div class="operations">
+                        <button onclick="transformText('uppercase')">UPPERCASE</button>
+                        <button onclick="transformText('lowercase')">lowercase</button>
+                        <button onclick="transformText('titlecase')">Title Case</button>
+                        <button onclick="transformText('sentencecase')">Sentence case</button>
+                        <button onclick="transformText('camelcase')">camelCase</button>
+                        <button onclick="transformText('snakecase')">snake_case</button>
+                        <button onclick="transformText('kebabcase')">kebab-case</button>
+                        <button onclick="transformText('togglecase')">tOGGLE cASE</button>
+                    </div>
+                </div>
+
+                <div class="operation-group">
+                    <h3>Text Manipulation</h3>
+                    <div class="operations">
+                        <button onclick="transformText('reverse')">Reverse Text</button>
+                        <button onclick="transformText('removeSpaces')">Remove Spaces</button>
+                        <button onclick="transformText('removeLineBreaks')">Remove Line Breaks</button>
+                        <button onclick="transformText('removeDuplicateLines')">Remove Duplicate Lines</button>
+                        <button onclick="transformText('sortLines')">Sort Lines A-Z</button>
+                        <button onclick="transformText('sortLinesDesc')">Sort Lines Z-A</button>
+                        <button onclick="transformText('trim')">Trim Whitespace</button>
+                        <button onclick="transformText('extractNumbers')">Extract Numbers</button>
+                        <button onclick="transformText('extractEmails')">Extract Emails</button>
+                        <button onclick="transformText('extractUrls')">Extract URLs</button>
+                    </div>
+                </div>
+
+                <div class="operation-group">
+                    <h3>Encoding/Decoding</h3>
+                    <div class="operations">
+                        <button onclick="transformText('urlEncode')">URL Encode</button>
+                        <button onclick="transformText('urlDecode')">URL Decode</button>
+                        <button onclick="transformText('htmlEncode')">HTML Encode</button>
+                        <button onclick="transformText('htmlDecode')">HTML Decode</button>
+                        <button onclick="transformText('unicodeEscape')">Unicode Escape</button>
+                        <button onclick="transformText('unicodeUnescape')">Unicode Unescape</button>
+                    </div>
+                </div>
+
+                <div class="operation-group">
+                    <h3>Actions</h3>
+                    <div class="operations">
+                        <button onclick="copyToClipboard()">📋 Copy Result</button>
+                        <button onclick="clearAll()">🗑️ Clear All</button>
+                    </div>
+                </div>
+
+                <div id="message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inputText = document.getElementById('inputText');
+        const message = document.getElementById('message');
+
+        inputText.addEventListener('input', updateStats);
+
+        function updateStats() {
+            const text = inputText.value;
+            const chars = text.length;
+            const charsNoSpaces = text.replace(/\s/g, '').length;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const lines = text.split('\n').length;
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length;
+
+            document.getElementById('stats').innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Characters</div>
+                        <div class="stat-value">${chars}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Characters (no spaces)</div>
+                        <div class="stat-value">${charsNoSpaces}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Words</div>
+                        <div class="stat-value">${words}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value">${lines}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Sentences</div>
+                        <div class="stat-value">${sentences}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Paragraphs</div>
+                        <div class="stat-value">${paragraphs}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function transformText(operation) {
+            let text = inputText.value;
+            let result = '';
+
+            try {
+                switch(operation) {
+                    case 'uppercase':
+                        result = text.toUpperCase();
+                        break;
+                    case 'lowercase':
+                        result = text.toLowerCase();
+                        break;
+                    case 'titlecase':
+                        result = text.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+                        break;
+                    case 'sentencecase':
+                        result = text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+                        break;
+                    case 'camelcase':
+                        result = text.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) =>
+                            index === 0 ? letter.toLowerCase() : letter.toUpperCase()
+                        ).replace(/\s+/g, '');
+                        break;
+                    case 'snakecase':
+                        result = text.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+                        break;
+                    case 'kebabcase':
+                        result = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                        break;
+                    case 'togglecase':
+                        result = text.split('').map(c => c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()).join('');
+                        break;
+                    case 'reverse':
+                        result = text.split('').reverse().join('');
+                        break;
+                    case 'removeSpaces':
+                        result = text.replace(/\s/g, '');
+                        break;
+                    case 'removeLineBreaks':
+                        result = text.replace(/\n/g, ' ');
+                        break;
+                    case 'removeDuplicateLines':
+                        result = [...new Set(text.split('\n'))].join('\n');
+                        break;
+                    case 'sortLines':
+                        result = text.split('\n').sort().join('\n');
+                        break;
+                    case 'sortLinesDesc':
+                        result = text.split('\n').sort().reverse().join('\n');
+                        break;
+                    case 'trim':
+                        result = text.split('\n').map(line => line.trim()).join('\n');
+                        break;
+                    case 'extractNumbers':
+                        result = (text.match(/\d+/g) || []).join('\n');
+                        break;
+                    case 'extractEmails':
+                        result = (text.match(/[\w.-]+@[\w.-]+\.\w+/g) || []).join('\n');
+                        break;
+                    case 'extractUrls':
+                        result = (text.match(/https?:\/\/[^\s]+/g) || []).join('\n');
+                        break;
+                    case 'urlEncode':
+                        result = encodeURIComponent(text);
+                        break;
+                    case 'urlDecode':
+                        result = decodeURIComponent(text);
+                        break;
+                    case 'htmlEncode':
+                        result = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                                    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                        break;
+                    case 'htmlDecode':
+                        const textarea = document.createElement('textarea');
+                        textarea.innerHTML = text;
+                        result = textarea.value;
+                        break;
+                    case 'unicodeEscape':
+                        result = text.split('').map(c => {
+                            const code = c.charCodeAt(0);
+                            return code > 127 ? '\\u' + ('0000' + code.toString(16)).slice(-4) : c;
+                        }).join('');
+                        break;
+                    case 'unicodeUnescape':
+                        result = text.replace(/\\u([0-9a-fA-F]{4})/g, (match, code) =>
+                            String.fromCharCode(parseInt(code, 16))
+                        );
+                        break;
+                }
+
+                inputText.value = result;
+                updateStats();
+                showMessage('✓ Transformation applied successfully', 'success');
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function copyToClipboard() {
+            const text = inputText.value;
+            if (!text) {
+                showMessage('❌ Nothing to copy', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage('✓ Copied to clipboard!', 'success');
+            }).catch(err => {
+                showMessage('❌ Failed to copy: ' + err.message, 'error');
+            });
+        }
+
+        function clearAll() {
+            inputText.value = '';
+            updateStats();
+            message.innerHTML = '';
+        }
+
+        function showMessage(text, type) {
+            message.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                message.innerHTML = '';
+            }, 3000);
+        }
+
+        updateStats();
+    </script>
+</body>
+</html>
