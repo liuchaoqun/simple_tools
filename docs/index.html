@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simple Tools - A collection of practical web-based tools for everyday tasks">
+    <title>Simple Tools - Practical Web Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tool-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .tool-card.coming-soon {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .tool-card.coming-soon:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #e9ecef;
+        }
+
+        .tool-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+
+        .tool-card p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .tool-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .github-link {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .github-link:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            header {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛠️ Simple Tools</h1>
+            <p class="subtitle">A collection of practical web-based tools for everyday tasks</p>
+        </header>
+
+        <div class="content">
+            <div class="intro">
+                <p>
+                    Welcome to Simple Tools! This is a growing collection of lightweight, easy-to-use web tools
+                    designed to solve common problems. Each tool is self-contained, runs entirely in your browser,
+                    and focuses on doing one thing well. No installation required, no data collected.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>Available Tools</h2>
+                <p style="color: #666; margin-top: 10px;">
+                    We're just getting started! Tools are currently being developed and will be added soon.
+                    Check back regularly for updates.
+                </p>
+                <div class="tools-grid">
+                    <!-- Tools will be added here as they're developed -->
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Coming Soon</h2>
+                <div class="tools-grid">
+                    <div class="tool-card coming-soon">
+                        <div class="tool-icon">📝</div>
+                        <h3>Text Utilities</h3>
+                        <p>String manipulation, case conversion, encoding/decoding, and text formatting tools.</p>
+                        <span class="badge">Coming Soon</span>
+                    </div>
+
+                    <div class="tool-card coming-soon">
+                        <div class="tool-icon">🔄</div>
+                        <h3>Data Converters</h3>
+                        <p>Convert between JSON, CSV, XML formats. Unit converters for length, weight, temperature, and more.</p>
+                        <span class="badge">Coming Soon</span>
+                    </div>
+
+                    <div class="tool-card coming-soon">
+                        <div class="tool-icon">⚡</div>
+                        <h3>Generators</h3>
+                        <p>UUID generator, secure password generator, QR code creator, and more.</p>
+                        <span class="badge">Coming Soon</span>
+                    </div>
+
+                    <div class="tool-card coming-soon">
+                        <div class="tool-icon">🧮</div>
+                        <h3>Calculators</h3>
+                        <p>Time zone converter, date calculator, percentage calculator, and other math utilities.</p>
+                        <span class="badge">Coming Soon</span>
+                    </div>
+
+                    <div class="tool-card coming-soon">
+                        <div class="tool-icon">💻</div>
+                        <h3>Developer Tools</h3>
+                        <p>Base64 encoder/decoder, hash generator (MD5, SHA), regex tester, and JSON formatter.</p>
+                        <span class="badge">Coming Soon</span>
+                    </div>
+
+                    <div class="tool-card coming-soon">
+                        <div class="tool-icon">🎨</div>
+                        <h3>Design Tools</h3>
+                        <p>Color picker, gradient generator, and CSS utilities for web designers.</p>
+                        <span class="badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>About This Project</h2>
+                <p style="color: #666; line-height: 1.8;">
+                    Simple Tools is an open-source project aimed at creating a comprehensive collection of
+                    web-based utilities that are fast, secure, and easy to use. All tools run entirely in
+                    your browser, ensuring your data stays private and secure.
+                </p>
+                <br>
+                <p style="color: #666; line-height: 1.8;">
+                    We welcome contributions! If you have ideas for new tools or improvements to existing ones,
+                    please visit our GitHub repository and submit a pull request or open an issue.
+                </p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Simple Tools - Open Source Project</p>
+            <a href="https://github.com/liuchaoqun/simple_tools" class="github-link">View on GitHub</a>
+        </footer>
+    </div>
+</body>
+</html>
