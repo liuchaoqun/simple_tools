@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .output {
+            flex: 1;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: #f8f9fa;
+            overflow: auto;
+        }
+
+        pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .error {
+            color: #dc3545;
+            padding: 15px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #155724;
+            padding: 15px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .indent-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .indent-controls label {
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .indent-controls input {
+            width: 60px;
+            padding: 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .json-key {
+            color: #881391;
+            font-weight: bold;
+        }
+
+        .json-string {
+            color: #1A1AA6;
+        }
+
+        .json-number {
+            color: #164;
+        }
+
+        .json-boolean {
+            color: #219;
+            font-weight: bold;
+        }
+
+        .json-null {
+            color: #666;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 JSON Viewer & Formatter</h1>
+        </header>
+
+        <div class="content">
+            <div class="panel">
+                <h2>📝 Input JSON</h2>
+                <textarea id="jsonInput" placeholder='Paste your JSON here, e.g.:
+{
+  "name": "John Doe",
+  "age": 30,
+  "city": "New York"
+}'></textarea>
+                <div class="controls">
+                    <button class="btn-primary" onclick="formatJSON()">Format JSON</button>
+                    <button class="btn-secondary" onclick="clearInput()">Clear</button>
+                    <button class="btn-success" onclick="copyToClipboard()">Copy Output</button>
+                </div>
+                <div class="indent-controls">
+                    <label for="indentSize">Indent Size:</label>
+                    <input type="number" id="indentSize" value="2" min="1" max="8">
+                </div>
+                <div id="message"></div>
+            </div>
+
+            <div class="panel">
+                <h2>✨ Formatted Output</h2>
+                <div class="output">
+                    <pre id="jsonOutput">Your formatted JSON will appear here...</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatJSON() {
+            const input = document.getElementById('jsonInput').value.trim();
+            const output = document.getElementById('jsonOutput');
+            const message = document.getElementById('message');
+            const indentSize = parseInt(document.getElementById('indentSize').value) || 2;
+
+            message.innerHTML = '';
+
+            if (!input) {
+                message.innerHTML = '<div class="error">Please enter some JSON to format.</div>';
+                output.textContent = 'Your formatted JSON will appear here...';
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(input);
+                const formatted = JSON.stringify(parsed, null, indentSize);
+                output.innerHTML = syntaxHighlight(formatted);
+                message.innerHTML = '<div class="success">✓ JSON is valid and formatted successfully!</div>';
+            } catch (error) {
+                output.textContent = 'Invalid JSON';
+                message.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        function clearInput() {
+            document.getElementById('jsonInput').value = '';
+            document.getElementById('jsonOutput').textContent = 'Your formatted JSON will appear here...';
+            document.getElementById('message').innerHTML = '';
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('jsonOutput');
+            const message = document.getElementById('message');
+            const text = output.textContent;
+
+            if (text === 'Your formatted JSON will appear here...' || text === 'Invalid JSON') {
+                message.innerHTML = '<div class="error">Nothing to copy. Please format JSON first.</div>';
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                message.innerHTML = '<div class="success">✓ Copied to clipboard!</div>';
+                setTimeout(() => {
+                    message.innerHTML = '';
+                }, 2000);
+            }).catch(err => {
+                message.innerHTML = `<div class="error">Failed to copy: ${err.message}</div>`;
+            });
+        }
+
+        // Allow Enter key to format (Ctrl+Enter or Cmd+Enter)
+        document.getElementById('jsonInput').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                formatJSON();
+            }
+        });
+
+        // Auto-format on paste
+        document.getElementById('jsonInput').addEventListener('paste', function(e) {
+            setTimeout(formatJSON, 100);
+        });
+    </script>
+</body>
+</html>
