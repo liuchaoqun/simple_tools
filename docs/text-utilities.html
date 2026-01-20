@@ -56,7 +56,7 @@
 
         .content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             padding: 30px;
         }
@@ -179,7 +179,7 @@
             border: 1px solid #f5c6cb;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1400px) {
             .content {
                 grid-template-columns: 1fr;
             }
@@ -256,11 +256,23 @@
 
                 <div id="message"></div>
             </div>
+
+            <div class="panel">
+                <h2>Output Text</h2>
+                <textarea id="outputText" placeholder="Converted text will appear here..." readonly></textarea>
+                <div class="operation-group">
+                    <h3>Output Actions</h3>
+                    <div class="operations">
+                        <button onclick="printOutput()">🖨️ Print</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
         const message = document.getElementById('message');
 
         inputText.addEventListener('input', updateStats);
@@ -394,8 +406,7 @@
                         break;
                 }
 
-                inputText.value = result;
-                updateStats();
+                outputText.value = result;
                 showMessage('✓ Transformation applied successfully', 'success');
             } catch (error) {
                 showMessage('❌ Error: ' + error.message, 'error');
@@ -403,7 +414,7 @@
         }
 
         function copyToClipboard() {
-            const text = inputText.value;
+            const text = outputText.value;
             if (!text) {
                 showMessage('❌ Nothing to copy', 'error');
                 return;
@@ -418,6 +429,7 @@
 
         function clearAll() {
             inputText.value = '';
+            outputText.value = '';
             updateStats();
             message.innerHTML = '';
         }
@@ -427,6 +439,42 @@
             setTimeout(() => {
                 message.innerHTML = '';
             }, 3000);
+        }
+
+        function printOutput() {
+            const text = outputText.value;
+            if (!text) {
+                showMessage('❌ Nothing to print', 'error');
+                return;
+            }
+
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Print Output</title>
+                    <style>
+                        body {
+                            font-family: 'Courier New', monospace;
+                            padding: 20px;
+                            white-space: pre-wrap;
+                            word-wrap: break-word;
+                        }
+                    </style>
+                </head>
+                <body>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</body>
+                </html>
+            `);
+            printWindow.document.close();
+
+            // Wait for content to load, then print
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+
+            showMessage('✓ Print dialog opened', 'success');
         }
 
         updateStats();
