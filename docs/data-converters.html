@@ -247,24 +247,50 @@
             <div class="converter-section">
                 <div class="panel">
                     <h3>Input Data</h3>
-                    <textarea id="formatInput" placeholder="Paste your data here..."></textarea>
-                    <div class="controls">
-                        <button onclick="convertFormat('json-csv')">JSON → CSV</button>
-                        <button onclick="convertFormat('csv-json')">CSV → JSON</button>
-                        <button onclick="convertFormat('json-xml')">JSON → XML</button>
-                        <button onclick="convertFormat('minify-json')">Minify JSON</button>
-                        <button onclick="convertFormat('prettify-json')">Prettify JSON</button>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label>Input Format:</label>
+                        <select id="inputFormat" onchange="updateConversionButtons()" style="width: 100%;">
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                            <option value="markdown">Markdown Table</option>
+                            <option value="yaml">YAML</option>
+                            <option value="html">HTML Table</option>
+                        </select>
                     </div>
+                    <textarea id="formatInput" placeholder="Paste your data here..."></textarea>
                     <div id="formatMessage"></div>
                 </div>
 
                 <div class="panel">
                     <h3>Output Data</h3>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label>Output Format:</label>
+                        <select id="outputFormat" style="width: 100%;">
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                            <option value="excel">Excel (CSV for Excel)</option>
+                            <option value="markdown">Markdown Table</option>
+                            <option value="latex">LaTeX Table</option>
+                            <option value="yaml">YAML</option>
+                            <option value="html">HTML Table</option>
+                            <option value="xml">XML</option>
+                        </select>
+                    </div>
                     <textarea id="formatOutput" placeholder="Converted data will appear here..." readonly></textarea>
                     <div class="controls">
+                        <button onclick="convertData()">🔄 Convert</button>
                         <button onclick="copyResult('format')">📋 Copy Result</button>
                         <button onclick="clearFormat()">🗑️ Clear All</button>
                     </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #667eea;">
+                <h4 style="margin: 0 0 10px 0; color: #2c3e50;">Quick Actions:</h4>
+                <div class="controls">
+                    <button onclick="convertFormat('minify-json')">Minify JSON</button>
+                    <button onclick="convertFormat('prettify-json')">Prettify JSON</button>
+                    <button onclick="convertFormat('sort-json')">Sort JSON Keys</button>
                 </div>
             </div>
         </div>
@@ -439,7 +465,77 @@
             document.getElementById(tab + '-tab').classList.add('active');
         }
 
-        // Format conversions
+        // Main conversion function
+        function convertData() {
+            const input = document.getElementById('formatInput').value.trim();
+            const output = document.getElementById('formatOutput');
+            const message = document.getElementById('formatMessage');
+            const inputFormat = document.getElementById('inputFormat').value;
+            const outputFormat = document.getElementById('outputFormat').value;
+
+            message.innerHTML = '';
+
+            if (!input) {
+                showMessage('formatMessage', '❌ Please enter some data', 'error');
+                return;
+            }
+
+            try {
+                // First, parse input to normalized data structure
+                let data;
+                switch(inputFormat) {
+                    case 'json':
+                        data = JSON.parse(input);
+                        break;
+                    case 'csv':
+                        data = csvToJSON(input);
+                        break;
+                    case 'markdown':
+                        data = markdownToJSON(input);
+                        break;
+                    case 'yaml':
+                        data = yamlToJSON(input);
+                        break;
+                    case 'html':
+                        data = htmlToJSON(input);
+                        break;
+                }
+
+                // Then, convert to output format
+                let result = '';
+                switch(outputFormat) {
+                    case 'json':
+                        result = JSON.stringify(data, null, 2);
+                        break;
+                    case 'csv':
+                    case 'excel':
+                        result = jsonToCSV(data);
+                        break;
+                    case 'markdown':
+                        result = jsonToMarkdown(data);
+                        break;
+                    case 'latex':
+                        result = jsonToLaTeX(data);
+                        break;
+                    case 'yaml':
+                        result = jsonToYAML(data);
+                        break;
+                    case 'html':
+                        result = jsonToHTML(data);
+                        break;
+                    case 'xml':
+                        result = jsonToXML(data);
+                        break;
+                }
+
+                output.value = result;
+                showMessage('formatMessage', '✓ Conversion successful!', 'success');
+            } catch (error) {
+                showMessage('formatMessage', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Quick format actions
         function convertFormat(type) {
             const input = document.getElementById('formatInput').value.trim();
             const output = document.getElementById('formatOutput');
@@ -455,54 +551,132 @@
             try {
                 let result = '';
                 switch(type) {
-                    case 'json-csv':
-                        const jsonData = JSON.parse(input);
-                        result = jsonToCSV(jsonData);
-                        break;
-                    case 'csv-json':
-                        result = JSON.stringify(csvToJSON(input), null, 2);
-                        break;
-                    case 'json-xml':
-                        const json = JSON.parse(input);
-                        result = jsonToXML(json);
-                        break;
                     case 'minify-json':
                         result = JSON.stringify(JSON.parse(input));
                         break;
                     case 'prettify-json':
                         result = JSON.stringify(JSON.parse(input), null, 2);
                         break;
+                    case 'sort-json':
+                        const parsed = JSON.parse(input);
+                        result = JSON.stringify(sortObjectKeys(parsed), null, 2);
+                        break;
                 }
                 output.value = result;
-                showMessage('formatMessage', '✓ Conversion successful!', 'success');
+                showMessage('formatMessage', '✓ Operation successful!', 'success');
             } catch (error) {
                 showMessage('formatMessage', '❌ Error: ' + error.message, 'error');
             }
         }
 
+        function sortObjectKeys(obj) {
+            if (Array.isArray(obj)) {
+                return obj.map(sortObjectKeys);
+            } else if (obj !== null && typeof obj === 'object') {
+                return Object.keys(obj).sort().reduce((result, key) => {
+                    result[key] = sortObjectKeys(obj[key]);
+                    return result;
+                }, {});
+            }
+            return obj;
+        }
+
+        function updateConversionButtons() {
+            // Can add dynamic button updates based on input format if needed
+        }
+
+        // JSON to other formats
         function jsonToCSV(json) {
             const array = Array.isArray(json) ? json : [json];
             if (array.length === 0) return '';
 
             const headers = Object.keys(array[0]);
-            const rows = array.map(obj => headers.map(h => JSON.stringify(obj[h] || '')).join(','));
+            const escapeCSV = (val) => {
+                const str = val === null || val === undefined ? '' : String(val);
+                return str.includes(',') || str.includes('"') || str.includes('\n')
+                    ? `"${str.replace(/"/g, '""')}"`
+                    : str;
+            };
+            const rows = array.map(obj => headers.map(h => escapeCSV(obj[h])).join(','));
             return [headers.join(','), ...rows].join('\n');
         }
 
-        function csvToJSON(csv) {
-            const lines = csv.trim().split('\n');
-            const headers = lines[0].split(',').map(h => h.trim());
-            return lines.slice(1).map(line => {
-                const values = line.split(',').map(v => v.trim());
-                return headers.reduce((obj, header, i) => {
-                    try {
-                        obj[header] = JSON.parse(values[i]);
-                    } catch {
-                        obj[header] = values[i];
-                    }
-                    return obj;
-                }, {});
+        function jsonToMarkdown(json) {
+            const array = Array.isArray(json) ? json : [json];
+            if (array.length === 0) return '';
+
+            const headers = Object.keys(array[0]);
+            let markdown = '| ' + headers.join(' | ') + ' |\n';
+            markdown += '| ' + headers.map(() => '---').join(' | ') + ' |\n';
+
+            array.forEach(obj => {
+                markdown += '| ' + headers.map(h => String(obj[h] || '')).join(' | ') + ' |\n';
             });
+
+            return markdown;
+        }
+
+        function jsonToLaTeX(json) {
+            const array = Array.isArray(json) ? json : [json];
+            if (array.length === 0) return '';
+
+            const headers = Object.keys(array[0]);
+            const escapeLatex = (str) => String(str).replace(/[&%$#_{}]/g, '\\$&');
+
+            let latex = '\\begin{table}[h]\n\\centering\n';
+            latex += '\\begin{tabular}{|' + headers.map(() => 'l').join('|') + '|}\n';
+            latex += '\\hline\n';
+            latex += headers.map(h => '\\textbf{' + escapeLatex(h) + '}').join(' & ') + ' \\\\\n';
+            latex += '\\hline\n';
+
+            array.forEach(obj => {
+                latex += headers.map(h => escapeLatex(obj[h] || '')).join(' & ') + ' \\\\\n';
+            });
+
+            latex += '\\hline\n\\end{tabular}\n\\caption{Data Table}\n\\end{table}';
+            return latex;
+        }
+
+        function jsonToYAML(json, indent = 0) {
+            const spaces = '  '.repeat(indent);
+
+            if (Array.isArray(json)) {
+                return json.map(item => {
+                    if (typeof item === 'object' && item !== null) {
+                        return spaces + '-\n' + jsonToYAML(item, indent + 1);
+                    }
+                    return spaces + '- ' + item;
+                }).join('\n');
+            } else if (typeof json === 'object' && json !== null) {
+                return Object.keys(json).map(key => {
+                    const value = json[key];
+                    if (typeof value === 'object' && value !== null) {
+                        return spaces + key + ':\n' + jsonToYAML(value, indent + 1);
+                    }
+                    return spaces + key + ': ' + (typeof value === 'string' ? `"${value}"` : value);
+                }).join('\n');
+            }
+            return spaces + json;
+        }
+
+        function jsonToHTML(json) {
+            const array = Array.isArray(json) ? json : [json];
+            if (array.length === 0) return '';
+
+            const headers = Object.keys(array[0]);
+            let html = '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">\n';
+            html += '  <thead>\n    <tr>\n';
+            headers.forEach(h => html += `      <th>${escapeHTML(h)}</th>\n`);
+            html += '    </tr>\n  </thead>\n  <tbody>\n';
+
+            array.forEach(obj => {
+                html += '    <tr>\n';
+                headers.forEach(h => html += `      <td>${escapeHTML(String(obj[h] || ''))}</td>\n`);
+                html += '    </tr>\n';
+            });
+
+            html += '  </tbody>\n</table>';
+            return html;
         }
 
         function jsonToXML(obj, rootName = 'root') {
@@ -510,7 +684,7 @@
 
             function objectToXML(obj, name) {
                 if (Array.isArray(obj)) {
-                    return obj.map(item => objectToXML(item, name)).join('');
+                    return obj.map((item, i) => objectToXML(item, name + '_item')).join('');
                 } else if (typeof obj === 'object' && obj !== null) {
                     let result = `<${name}>`;
                     for (let key in obj) {
@@ -519,11 +693,141 @@
                     result += `</${name}>`;
                     return result;
                 } else {
-                    return `<${name}>${obj}</${name}>`;
+                    return `<${name}>${escapeHTML(String(obj))}</${name}>`;
                 }
             }
 
             return xml + objectToXML(obj, rootName);
+        }
+
+        function escapeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Other formats to JSON
+        function csvToJSON(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            return lines.slice(1).map(line => {
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    if (char === '"') {
+                        if (inQuotes && line[i + 1] === '"') {
+                            current += '"';
+                            i++;
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+
+                return headers.reduce((obj, header, i) => {
+                    const value = values[i] || '';
+                    try {
+                        obj[header] = JSON.parse(value);
+                    } catch {
+                        obj[header] = value;
+                    }
+                    return obj;
+                }, {});
+            });
+        }
+
+        function markdownToJSON(markdown) {
+            const lines = markdown.trim().split('\n').filter(line => line.trim());
+            if (lines.length < 2) throw new Error('Invalid markdown table');
+
+            const headers = lines[0].split('|').map(h => h.trim()).filter(h => h);
+            const data = [];
+
+            for (let i = 2; i < lines.length; i++) {
+                const cells = lines[i].split('|').map(c => c.trim()).filter(c => c);
+                const obj = {};
+                headers.forEach((header, idx) => {
+                    obj[header] = cells[idx] || '';
+                });
+                data.push(obj);
+            }
+
+            return data;
+        }
+
+        function yamlToJSON(yaml) {
+            // Simple YAML parser (handles basic cases)
+            const lines = yaml.trim().split('\n');
+            const result = [];
+            let currentObj = null;
+            let inArray = false;
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('-')) {
+                    if (currentObj) result.push(currentObj);
+                    currentObj = {};
+                    inArray = true;
+                    const rest = trimmed.substring(1).trim();
+                    if (rest && rest.includes(':')) {
+                        const [key, ...valueParts] = rest.split(':');
+                        currentObj[key.trim()] = parseYAMLValue(valueParts.join(':').trim());
+                    }
+                } else if (trimmed.includes(':')) {
+                    const [key, ...valueParts] = trimmed.split(':');
+                    const value = parseYAMLValue(valueParts.join(':').trim());
+                    if (currentObj) {
+                        currentObj[key.trim()] = value;
+                    } else {
+                        currentObj = {};
+                        currentObj[key.trim()] = value;
+                    }
+                }
+            });
+
+            if (currentObj) result.push(currentObj);
+            return result.length === 1 && !inArray ? result[0] : result;
+        }
+
+        function parseYAMLValue(value) {
+            if (!value) return '';
+            value = value.replace(/^["']|["']$/g, '');
+            if (value === 'true') return true;
+            if (value === 'false') return false;
+            if (value === 'null') return null;
+            if (!isNaN(value) && value !== '') return Number(value);
+            return value;
+        }
+
+        function htmlToJSON(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const table = doc.querySelector('table');
+
+            if (!table) throw new Error('No table found in HTML');
+
+            const headers = Array.from(table.querySelectorAll('th, thead td')).map(th => th.textContent.trim());
+            const rows = Array.from(table.querySelectorAll('tbody tr, tr'));
+
+            return rows.map(row => {
+                const cells = Array.from(row.querySelectorAll('td'));
+                if (cells.length === 0) return null;
+
+                const obj = {};
+                headers.forEach((header, idx) => {
+                    obj[header] = cells[idx] ? cells[idx].textContent.trim() : '';
+                });
+                return obj;
+            }).filter(obj => obj !== null);
         }
 
         // Unit conversions
