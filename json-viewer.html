@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Viewer</title>
+    <title>Data Viewer</title>
     <style>
         * {
             margin: 0;
@@ -185,6 +185,34 @@
             font-size: 14px;
         }
 
+        .format-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .format-selector label {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .format-selector select {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .format-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         @media (max-width: 768px) {
             .content {
                 grid-template-columns: 1fr;
@@ -218,12 +246,21 @@
 <body>
     <div class="container">
         <header>
-            <h1>🔍 JSON Viewer & Formatter</h1>
+            <h1>🔍 Data Viewer & Formatter</h1>
         </header>
 
         <div class="content">
             <div class="panel">
-                <h2>📝 Input JSON</h2>
+                <h2>📝 Input Data</h2>
+                <div class="format-selector">
+                    <label for="dataFormat">Format:</label>
+                    <select id="dataFormat" onchange="updatePlaceholder()">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="html">HTML</option>
+                    </select>
+                </div>
                 <textarea id="jsonInput" placeholder='Paste your JSON here, e.g.:
 {
   "name": "John Doe",
@@ -231,12 +268,12 @@
   "city": "New York"
 }'></textarea>
                 <div class="controls">
-                    <button class="btn-primary" onclick="formatJSON()">Format JSON</button>
+                    <button class="btn-primary" onclick="formatData()">Format Data</button>
                     <button class="btn-secondary" onclick="clearInput()">Clear</button>
                     <button class="btn-success" onclick="copyToClipboard()">Copy Output</button>
                 </div>
                 <div class="indent-controls">
-                    <label for="indentSize">Indent Size:</label>
+                    <label for="indentSize">Indent Size (JSON):</label>
                     <input type="number" id="indentSize" value="2" min="1" max="8">
                 </div>
                 <div id="message"></div>
@@ -245,36 +282,166 @@
             <div class="panel">
                 <h2>✨ Formatted Output</h2>
                 <div class="output">
-                    <pre id="jsonOutput">Your formatted JSON will appear here...</pre>
+                    <pre id="jsonOutput">Your formatted data will appear here...</pre>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function formatJSON() {
+        function formatData() {
             const input = document.getElementById('jsonInput').value.trim();
             const output = document.getElementById('jsonOutput');
             const message = document.getElementById('message');
+            const format = document.getElementById('dataFormat').value;
             const indentSize = parseInt(document.getElementById('indentSize').value) || 2;
 
             message.innerHTML = '';
 
             if (!input) {
-                message.innerHTML = '<div class="error">Please enter some JSON to format.</div>';
-                output.textContent = 'Your formatted JSON will appear here...';
+                message.innerHTML = '<div class="error">Please enter some data to format.</div>';
+                output.textContent = 'Your formatted data will appear here...';
                 return;
             }
 
             try {
-                const parsed = JSON.parse(input);
-                const formatted = JSON.stringify(parsed, null, indentSize);
-                output.innerHTML = syntaxHighlight(formatted);
-                message.innerHTML = '<div class="success">✓ JSON is valid and formatted successfully!</div>';
+                let formatted = '';
+
+                switch(format) {
+                    case 'json':
+                        const parsed = JSON.parse(input);
+                        formatted = JSON.stringify(parsed, null, indentSize);
+                        output.innerHTML = syntaxHighlight(formatted);
+                        message.innerHTML = '<div class="success">✓ JSON is valid and formatted successfully!</div>';
+                        break;
+
+                    case 'csv':
+                        formatted = formatCSV(input);
+                        output.innerHTML = `<div style="overflow-x: auto;">${formatted}</div>`;
+                        message.innerHTML = '<div class="success">✓ CSV formatted successfully!</div>';
+                        break;
+
+                    case 'markdown':
+                        formatted = formatMarkdown(input);
+                        output.innerHTML = formatted;
+                        message.innerHTML = '<div class="success">✓ Markdown rendered successfully!</div>';
+                        break;
+
+                    case 'html':
+                        formatted = formatHTML(input);
+                        output.innerHTML = formatted;
+                        message.innerHTML = '<div class="success">✓ HTML rendered successfully!</div>';
+                        break;
+                }
             } catch (error) {
-                output.textContent = 'Invalid JSON';
+                output.textContent = 'Invalid format';
                 message.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
             }
+        }
+
+        function formatCSV(csv) {
+            const lines = csv.trim().split('\n');
+            if (lines.length === 0) return '<pre>Empty CSV</pre>';
+
+            let table = '<table style="border-collapse: collapse; width: 100%; font-family: monospace; font-size: 13px;">';
+
+            // Header row
+            const headers = lines[0].split(',').map(h => h.trim());
+            table += '<thead><tr style="background: #667eea; color: white;">';
+            headers.forEach(header => {
+                table += `<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">${escapeHTML(header)}</th>`;
+            });
+            table += '</tr></thead><tbody>';
+
+            // Data rows
+            for (let i = 1; i < lines.length; i++) {
+                const cells = lines[i].split(',').map(c => c.trim());
+                table += `<tr style="background: ${i % 2 === 0 ? '#f9f9f9' : 'white'};">`;
+                cells.forEach(cell => {
+                    table += `<td style="border: 1px solid #ddd; padding: 8px;">${escapeHTML(cell)}</td>`;
+                });
+                table += '</tr>';
+            }
+
+            table += '</tbody></table>';
+            return table;
+        }
+
+        function formatMarkdown(markdown) {
+            // Basic markdown to HTML conversion
+            let html = markdown;
+
+            // Headers
+            html = html.replace(/^### (.+)$/gm, '<h3 style="color: #2c3e50; margin: 15px 0 10px 0;">$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2 style="color: #2c3e50; margin: 20px 0 10px 0;">$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1 style="color: #2c3e50; margin: 20px 0 15px 0;">$1</h1>');
+
+            // Bold and Italic
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+            // Code blocks
+            html = html.replace(/```(\w+)?\n([\s\S]+?)```/g, '<pre style="background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto;"><code>$2</code></pre>');
+
+            // Inline code
+            html = html.replace(/`(.+?)`/g, '<code style="background: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: monospace;">$1</code>');
+
+            // Links
+            html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color: #667eea; text-decoration: none;">$1</a>');
+
+            // Lists
+            html = html.replace(/^\* (.+)$/gm, '<li style="margin-left: 20px;">$1</li>');
+            html = html.replace(/^- (.+)$/gm, '<li style="margin-left: 20px;">$1</li>');
+
+            // Line breaks
+            html = html.replace(/\n\n/g, '<br><br>');
+            html = html.replace(/\n/g, '<br>');
+
+            return `<div style="line-height: 1.6; color: #333;">${html}</div>`;
+        }
+
+        function formatHTML(html) {
+            // Render HTML safely
+            const escaped = escapeHTML(html);
+            const iframe = `<div style="border: 1px solid #ddd; border-radius: 5px; padding: 10px; background: white; margin-bottom: 10px;"><strong>Rendered HTML:</strong></div><iframe srcdoc="${html.replace(/"/g, '&quot;')}" style="width: 100%; min-height: 300px; border: 1px solid #ddd; border-radius: 5px; background: white;"></iframe><div style="margin-top: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px;"><strong>HTML Source:</strong><pre style="margin-top: 5px; white-space: pre-wrap; word-wrap: break-word;">${escaped}</pre></div>`;
+            return iframe;
+        }
+
+        function escapeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updatePlaceholder() {
+            const format = document.getElementById('dataFormat').value;
+            const input = document.getElementById('jsonInput');
+            const placeholders = {
+                json: `Paste your JSON here, e.g.:
+{
+  "name": "John Doe",
+  "age": 30,
+  "city": "New York"
+}`,
+                csv: `Paste your CSV here, e.g.:
+Name,Age,City
+John Doe,30,New York
+Jane Smith,25,Los Angeles`,
+                markdown: `Paste your Markdown here, e.g.:
+# Heading 1
+## Heading 2
+**Bold text** and *italic text*
+- List item 1
+- List item 2`,
+                html: `Paste your HTML here, e.g.:
+<h1>Hello World</h1>
+<p>This is a <strong>paragraph</strong>.</p>
+<ul>
+  <li>Item 1</li>
+  <li>Item 2</li>
+</ul>`
+            };
+            input.placeholder = placeholders[format];
         }
 
         function syntaxHighlight(json) {
@@ -298,7 +465,7 @@
 
         function clearInput() {
             document.getElementById('jsonInput').value = '';
-            document.getElementById('jsonOutput').textContent = 'Your formatted JSON will appear here...';
+            document.getElementById('jsonOutput').textContent = 'Your formatted data will appear here...';
             document.getElementById('message').innerHTML = '';
         }
 
@@ -307,8 +474,8 @@
             const message = document.getElementById('message');
             const text = output.textContent;
 
-            if (text === 'Your formatted JSON will appear here...' || text === 'Invalid JSON') {
-                message.innerHTML = '<div class="error">Nothing to copy. Please format JSON first.</div>';
+            if (text === 'Your formatted data will appear here...' || text === 'Invalid format') {
+                message.innerHTML = '<div class="error">Nothing to copy. Please format data first.</div>';
                 return;
             }
 
@@ -325,13 +492,13 @@
         // Allow Enter key to format (Ctrl+Enter or Cmd+Enter)
         document.getElementById('jsonInput').addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                formatJSON();
+                formatData();
             }
         });
 
         // Auto-format on paste
         document.getElementById('jsonInput').addEventListener('paste', function(e) {
-            setTimeout(formatJSON, 100);
+            setTimeout(formatData, 100);
         });
     </script>
 </body>
