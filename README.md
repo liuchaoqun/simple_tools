@@ -63,11 +63,17 @@ Contributions are welcome! If you have ideas for simple tools that would be usef
 
 ```
 simple_tools/
-├── docs/              # GitHub Pages site
-│   ├── index.html    # Main landing page
-│   └── tools/        # Individual tool pages
-├── README.md         # This file
-└── .gitignore        # Git ignore rules
+├── docs/                      # GitHub Pages site
+│   ├── index.html            # Main landing page
+│   ├── json-viewer.html      # JSON formatting and validation tool
+│   ├── text-utilities.html   # Text manipulation tools
+│   ├── data-converters.html  # Format and unit converters
+│   ├── generators.html       # UUID, password, and QR code generators
+│   ├── calculators.html      # Time, date, and math calculators
+│   ├── developer-tools.html  # Base64, hash, and regex tools
+│   └── design-tools.html     # Color, gradient, and shadow tools
+├── README.md                 # This file
+└── .gitignore                # Git ignore rules
 ```
 
 ## License
