@@ -451,9 +451,13 @@
             <div id="loans-maxloan" class="sub-content">
                 <h2 class="section-title">Maximum Loan Calculator</h2>
                 <div class="info-box">
-                    Calculate the maximum loan you can afford based on your income and TDSR limit. The TDSR (Total Debt Servicing Ratio) caps your total monthly debt obligations at 55% of your gross monthly income.
+                    Calculate the maximum loan you can afford based on your income, age, and TDSR limit. The TDSR (Total Debt Servicing Ratio) caps your total monthly debt obligations at 55% of your gross monthly income. Your age affects the maximum loan tenure (age + tenure ≤ 65 for HDB, ≤ 65-75 for private).
                 </div>
                 <div class="form-grid">
+                    <div class="form-group">
+                        <label>Your Age (Years)</label>
+                        <input type="number" id="maxloan-age" placeholder="e.g., 35" min="21" max="65">
+                    </div>
                     <div class="form-group">
                         <label>Gross Monthly Income (S$)</label>
                         <input type="number" id="maxloan-income" placeholder="e.g., 10000">
@@ -467,14 +471,10 @@
                         <input type="number" id="maxloan-rate" value="3.5" step="0.1">
                     </div>
                     <div class="form-group">
-                        <label>Loan Tenure (Years)</label>
-                        <input type="number" id="maxloan-tenure" value="25" min="1" max="35">
-                    </div>
-                    <div class="form-group">
                         <label>Property Type</label>
                         <select id="maxloan-type">
-                            <option value="hdb">HDB (max 25 years)</option>
-                            <option value="private">Private Property (max 35 years)</option>
+                            <option value="hdb">HDB (max 25 years, age+tenure ≤ 65)</option>
+                            <option value="private">Private Property (max 35 years, age+tenure ≤ 65-75)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -970,25 +970,44 @@
 
         // Max Loan Calculator
         function calculateMaxLoan() {
+            const age = parseInt(document.getElementById('maxloan-age').value) || 0;
             const income = parseFloat(document.getElementById('maxloan-income').value) || 0;
             const existing = parseFloat(document.getElementById('maxloan-existing').value) || 0;
             const rate = parseFloat(document.getElementById('maxloan-rate').value) / 100 / 12;
-            const years = parseInt(document.getElementById('maxloan-tenure').value);
             const propertyType = document.getElementById('maxloan-type').value;
             const ltvPercent = parseInt(document.getElementById('maxloan-ltv').value);
 
-            const maxTenure = propertyType === 'hdb' ? 25 : 35;
-
-            if (years > maxTenure) {
+            // Validate age
+            if (age < 21 || age > 65) {
                 document.getElementById('maxloan-result').style.display = 'block';
                 document.getElementById('maxloan-result').innerHTML = `
                     <div class="warning-box">
-                        Maximum loan tenure for ${propertyType === 'hdb' ? 'HDB' : 'Private'} property is ${maxTenure} years.
+                        Please enter a valid age between 21 and 65 years.
                     </div>
                 `;
                 return;
             }
 
+            // Calculate max tenure based on age
+            // HDB: age + tenure ≤ 65 (max 25 years)
+            // Private: age + tenure ≤ 65 for full LTV, can extend to 75 with reduced LTV (simplified to 65)
+            const ageLimit = propertyType === 'hdb' ? 65 : 65;
+            const propertyMaxTenure = propertyType === 'hdb' ? 25 : 35;
+            const ageBasedMaxTenure = Math.max(0, ageLimit - age);
+            const effectiveMaxTenure = Math.min(propertyMaxTenure, ageBasedMaxTenure);
+
+            if (effectiveMaxTenure <= 0) {
+                document.getElementById('maxloan-result').style.display = 'block';
+                document.getElementById('maxloan-result').innerHTML = `
+                    <div class="error-box">
+                        <strong>Age Limit Exceeded</strong><br>
+                        At age ${age}, you exceed the age limit for a housing loan (age + tenure must be ≤ ${ageLimit}).
+                    </div>
+                `;
+                return;
+            }
+
+            const years = effectiveMaxTenure;
             const tenure = years * 12;
 
             // Max monthly mortgage based on TDSR (55% of income minus existing debt)
@@ -1028,11 +1047,28 @@
             const totalPayment = maxMonthlyMortgage * tenure;
             const totalInterest = totalPayment - maxLoan;
 
+            // Check if tenure was limited by age
+            const tenureLimitedByAge = ageBasedMaxTenure < propertyMaxTenure;
+            const ageNote = tenureLimitedByAge ?
+                `<div class="warning-box" style="margin-bottom: 15px;">
+                    <strong>Tenure Limited by Age</strong><br>
+                    At age ${age}, your maximum loan tenure is ${effectiveMaxTenure} years (age + tenure ≤ ${ageLimit}). A longer tenure would increase your borrowing power.
+                </div>` : '';
+
             document.getElementById('maxloan-result').style.display = 'block';
             document.getElementById('maxloan-result').innerHTML = `
                 <div class="success-box">
                     <strong>Your Maximum Borrowing Power</strong><br>
-                    Based on your income and TDSR limit, here's what you can afford.
+                    Based on your age, income, and TDSR limit, here's what you can afford.
+                </div>
+                ${ageNote}
+                <div class="result-item">
+                    <span class="result-label">Your Age</span>
+                    <span class="result-value">${age} years</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Maximum Loan Tenure</span>
+                    <span class="result-value">${effectiveMaxTenure} years</span>
                 </div>
                 <div class="result-item">
                     <span class="result-label">Gross Monthly Income</span>
