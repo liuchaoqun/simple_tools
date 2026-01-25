@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore Real Estate Calculator | Simple Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+        }
+        .nav {
+            background: #34495e;
+            padding: 10px 20px;
+        }
+        .nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+        .nav a:hover {
+            color: #667eea;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: #e9ecef;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .tab:hover {
+            background: #667eea;
+            color: white;
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        input, select {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button.calculate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        button.calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 5px solid #667eea;
+            margin-top: 20px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            color: #666;
+        }
+        .result-value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .result-value.highlight {
+            color: #667eea;
+            font-size: 1.2em;
+        }
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+            font-size: 13px;
+        }
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+            font-size: 13px;
+        }
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .error-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .sub-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .sub-tab {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .sub-tab:hover, .sub-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .sub-content {
+            display: none;
+        }
+        .sub-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .breakdown-table td:last-child {
+            text-align: right;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .tabs {
+                flex-direction: column;
+            }
+            .tab {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏠 Singapore Real Estate Calculator</h1>
+        <p>Financial tools for property transactions in Singapore</p>
+    </div>
+    <div class="nav">
+        <a href="index.html">← Back to Home</a>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('transaction')">Transaction</button>
+            <button class="tab" onclick="switchTab('loans')">Loans & Affordability</button>
+            <button class="tab" onclick="switchTab('investment')">Investment Analysis</button>
+            <button class="tab" onclick="switchTab('tax')">Personal Tax</button>
+        </div>
+
+        <!-- Transaction Tab -->
+        <div id="transaction-tab" class="tab-content active">
+            <div class="sub-tabs">
+                <button class="sub-tab active" onclick="switchSubTab('transaction', 'commission')">Commission</button>
+                <button class="sub-tab" onclick="switchSubTab('transaction', 'bsd')">BSD</button>
+                <button class="sub-tab" onclick="switchSubTab('transaction', 'absd')">ABSD</button>
+            </div>
+
+            <!-- Commission Calculator -->
+            <div id="transaction-commission" class="sub-content active">
+                <h2 class="section-title">Commission Calculator</h2>
+                <div class="info-box">
+                    Standard commission rates in Singapore: 1-2% for resale properties, typically split between buyer's and seller's agents.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Property Price (S$)</label>
+                        <input type="number" id="comm-price" placeholder="e.g., 1500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Commission Rate (%)</label>
+                        <input type="number" id="comm-rate" value="2" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Your Split (%)</label>
+                        <input type="number" id="comm-split" value="50" step="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Agency Split (%)</label>
+                        <input type="number" id="agency-split" value="30" step="5">
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateCommission()">Calculate Commission</button>
+                <div id="commission-result" class="result-box" style="display:none;"></div>
+            </div>
+
+            <!-- BSD Calculator -->
+            <div id="transaction-bsd" class="sub-content">
+                <h2 class="section-title">Buyer's Stamp Duty (BSD) Calculator</h2>
+                <div class="info-box">
+                    BSD applies to all property purchases in Singapore. Rates are tiered based on purchase price or market value, whichever is higher.
+                </div>
+                <table>
+                    <tr><th>Purchase Price</th><th>BSD Rate</th></tr>
+                    <tr><td>First $180,000</td><td>1%</td></tr>
+                    <tr><td>Next $180,000</td><td>2%</td></tr>
+                    <tr><td>Next $640,000</td><td>3%</td></tr>
+                    <tr><td>Next $500,000</td><td>4%</td></tr>
+                    <tr><td>Next $1,500,000</td><td>5%</td></tr>
+                    <tr><td>Remaining amount</td><td>6%</td></tr>
+                </table>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Property Price / Market Value (S$)</label>
+                        <input type="number" id="bsd-price" placeholder="e.g., 1500000">
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateBSD()">Calculate BSD</button>
+                <div id="bsd-result" class="result-box" style="display:none;"></div>
+            </div>
+
+            <!-- ABSD Calculator -->
+            <div id="transaction-absd" class="sub-content">
+                <h2 class="section-title">Additional Buyer's Stamp Duty (ABSD) Calculator</h2>
+                <div class="info-box">
+                    ABSD rates depend on your residency status and the number of properties you own. Rates shown are as of 2024.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Property Price (S$)</label>
+                        <input type="number" id="absd-price" placeholder="e.g., 1500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Buyer Profile</label>
+                        <select id="absd-profile">
+                            <option value="sc1">Singapore Citizen - 1st Property</option>
+                            <option value="sc2">Singapore Citizen - 2nd Property</option>
+                            <option value="sc3">Singapore Citizen - 3rd+ Property</option>
+                            <option value="pr1">PR - 1st Property</option>
+                            <option value="pr2">PR - 2nd Property</option>
+                            <option value="pr3">PR - 3rd+ Property</option>
+                            <option value="foreigner">Foreigner</option>
+                            <option value="entity">Entity (Company/Trust)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateABSD()">Calculate ABSD</button>
+                <div id="absd-result" class="result-box" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Loans & Affordability Tab -->
+        <div id="loans-tab" class="tab-content">
+            <div class="sub-tabs">
+                <button class="sub-tab active" onclick="switchSubTab('loans', 'mortgage')">Mortgage</button>
+                <button class="sub-tab" onclick="switchSubTab('loans', 'tdsr')">TDSR</button>
+                <button class="sub-tab" onclick="switchSubTab('loans', 'ltv')">LTV</button>
+            </div>
+
+            <!-- Mortgage Calculator -->
+            <div id="loans-mortgage" class="sub-content active">
+                <h2 class="section-title">Monthly Mortgage Calculator</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Loan Amount (S$)</label>
+                        <input type="number" id="mortgage-loan" placeholder="e.g., 800000">
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (% per annum)</label>
+                        <input type="number" id="mortgage-rate" value="3.5" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Tenure (Years)</label>
+                        <input type="number" id="mortgage-tenure" value="25" min="1" max="35">
+                    </div>
+                    <div class="form-group">
+                        <label>Property Type</label>
+                        <select id="mortgage-type">
+                            <option value="hdb">HDB (max 25 years)</option>
+                            <option value="private">Private Property (max 35 years)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateMortgage()">Calculate Monthly Payment</button>
+                <div id="mortgage-result" class="result-box" style="display:none;"></div>
+            </div>
+
+            <!-- TDSR Calculator -->
+            <div id="loans-tdsr" class="sub-content">
+                <h2 class="section-title">Total Debt Servicing Ratio (TDSR) Calculator</h2>
+                <div class="info-box">
+                    TDSR limits your total monthly debt obligations to 55% of your gross monthly income. This includes all loans - housing, car, credit cards, etc.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Gross Monthly Income (S$)</label>
+                        <input type="number" id="tdsr-income" placeholder="e.g., 10000">
+                    </div>
+                    <div class="form-group">
+                        <label>Existing Monthly Debt Obligations (S$)</label>
+                        <input type="number" id="tdsr-existing" placeholder="e.g., 1000" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Proposed Monthly Mortgage (S$)</label>
+                        <input type="number" id="tdsr-proposed" placeholder="e.g., 3000">
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateTDSR()">Check TDSR</button>
+                <div id="tdsr-result" class="result-box" style="display:none;"></div>
+            </div>
+
+            <!-- LTV Calculator -->
+            <div id="loans-ltv" class="sub-content">
+                <h2 class="section-title">Loan-to-Value (LTV) Calculator</h2>
+                <div class="info-box">
+                    LTV determines the maximum loan amount based on property value. First housing loan with no outstanding loans: up to 75% LTV. Lower LTV for subsequent loans.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Property Price (S$)</label>
+                        <input type="number" id="ltv-price" placeholder="e.g., 1500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Scenario</label>
+                        <select id="ltv-scenario">
+                            <option value="first-no">1st Loan, No Outstanding Loans (75%)</option>
+                            <option value="first-one">1st Loan, 1 Outstanding Loan (45%)</option>
+                            <option value="first-two">1st Loan, 2+ Outstanding Loans (35%)</option>
+                            <option value="second-no">2nd Loan, No Outstanding Loans (45%)</option>
+                            <option value="second-one">2nd Loan, 1+ Outstanding Loans (25%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Property Type</label>
+                        <select id="ltv-type">
+                            <option value="hdb">HDB</option>
+                            <option value="private">Private Property</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateLTV()">Calculate Maximum Loan</button>
+                <div id="ltv-result" class="result-box" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Investment Analysis Tab -->
+        <div id="investment-tab" class="tab-content">
+            <div class="sub-tabs">
+                <button class="sub-tab active" onclick="switchSubTab('investment', 'yield')">Rental Yield</button>
+                <button class="sub-tab" onclick="switchSubTab('investment', 'psf')">PSF</button>
+                <button class="sub-tab" onclick="switchSubTab('investment', 'cov')">COV</button>
+            </div>
+
+            <!-- Rental Yield Calculator -->
+            <div id="investment-yield" class="sub-content active">
+                <h2 class="section-title">Rental Yield Calculator</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Purchase Price (S$)</label>
+                        <input type="number" id="yield-price" placeholder="e.g., 1500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Rental Income (S$)</label>
+                        <input type="number" id="yield-rental" placeholder="e.g., 4000">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Maintenance Fee (S$)</label>
+                        <input type="number" id="yield-maintenance" placeholder="e.g., 400" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Annual Property Tax (S$)</label>
+                        <input type="number" id="yield-tax" placeholder="e.g., 3000" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Other Annual Expenses (S$)</label>
+                        <input type="number" id="yield-other" placeholder="e.g., 2000" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Estimated Vacancy (months/year)</label>
+                        <input type="number" id="yield-vacancy" value="0.5" step="0.5" min="0" max="12">
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateYield()">Calculate Rental Yield</button>
+                <div id="yield-result" class="result-box" style="display:none;"></div>
+            </div>
+
+            <!-- PSF Calculator -->
+            <div id="investment-psf" class="sub-content">
+                <h2 class="section-title">Price Per Square Foot (PSF) Calculator</h2>
+                <div class="info-box">
+                    PSF is a key metric for comparing property values in Singapore. Lower PSF generally indicates better value, but consider location, age, and amenities.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Property Price (S$)</label>
+                        <input type="number" id="psf-price" placeholder="e.g., 1500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Floor Area</label>
+                        <input type="number" id="psf-area" placeholder="e.g., 1200">
+                    </div>
+                    <div class="form-group">
+                        <label>Area Unit</label>
+                        <select id="psf-unit">
+                            <option value="sqft">Square Feet</option>
+                            <option value="sqm">Square Meters</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculatePSF()">Calculate PSF</button>
+                <div id="psf-result" class="result-box" style="display:none;"></div>
+            </div>
+
+            <!-- COV Calculator -->
+            <div id="investment-cov" class="sub-content">
+                <h2 class="section-title">Cash Over Valuation (COV) Calculator</h2>
+                <div class="info-box">
+                    COV is the difference between the purchase price and the official valuation. This amount must be paid in cash for HDB resale transactions.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Purchase Price (S$)</label>
+                        <input type="number" id="cov-price" placeholder="e.g., 550000">
+                    </div>
+                    <div class="form-group">
+                        <label>Bank/HDB Valuation (S$)</label>
+                        <input type="number" id="cov-valuation" placeholder="e.g., 520000">
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateCOV()">Calculate COV</button>
+                <div id="cov-result" class="result-box" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Personal Tax Tab -->
+        <div id="tax-tab" class="tab-content">
+            <h2 class="section-title">Singapore Personal Income Tax Calculator</h2>
+            <div class="info-box">
+                Tax rates for Year of Assessment 2024 (Income Year 2023). Tax residents enjoy progressive rates from 0% to 24%. First $20,000 is tax-free.
+            </div>
+            <table>
+                <tr><th>Chargeable Income</th><th>Tax Rate</th></tr>
+                <tr><td>First $20,000</td><td>0%</td></tr>
+                <tr><td>Next $10,000</td><td>2%</td></tr>
+                <tr><td>Next $10,000</td><td>3.5%</td></tr>
+                <tr><td>Next $40,000</td><td>7%</td></tr>
+                <tr><td>Next $40,000</td><td>11.5%</td></tr>
+                <tr><td>Next $40,000</td><td>15%</td></tr>
+                <tr><td>Next $40,000</td><td>18%</td></tr>
+                <tr><td>Next $40,000</td><td>19%</td></tr>
+                <tr><td>Next $40,000</td><td>19.5%</td></tr>
+                <tr><td>Next $40,000</td><td>20%</td></tr>
+                <tr><td>Next $40,000</td><td>22%</td></tr>
+                <tr><td>Next $40,000</td><td>23%</td></tr>
+                <tr><td>Above $500,000</td><td>24%</td></tr>
+            </table>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Annual Gross Income (S$)</label>
+                    <input type="number" id="tax-income" placeholder="e.g., 120000">
+                </div>
+                <div class="form-group">
+                    <label>CPF Contributions (S$)</label>
+                    <input type="number" id="tax-cpf" placeholder="Employee's share" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Other Deductions/Reliefs (S$)</label>
+                    <input type="number" id="tax-reliefs" placeholder="e.g., donations, courses" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Tax Resident Status</label>
+                    <select id="tax-resident">
+                        <option value="resident">Tax Resident</option>
+                        <option value="non-resident">Non-Resident (flat 24%)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="calculate" onclick="calculateTax()">Calculate Tax</button>
+            <div id="tax-result" class="result-box" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        function switchSubTab(parent, subName) {
+            const container = document.getElementById(parent + '-tab');
+            container.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+            container.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(parent + '-' + subName).classList.add('active');
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-SG', {
+                style: 'currency',
+                currency: 'SGD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-SG').format(num);
+        }
+
+        // Commission Calculator
+        function calculateCommission() {
+            const price = parseFloat(document.getElementById('comm-price').value) || 0;
+            const rate = parseFloat(document.getElementById('comm-rate').value) || 0;
+            const agentSplit = parseFloat(document.getElementById('comm-split').value) || 0;
+            const agencySplit = parseFloat(document.getElementById('agency-split').value) || 0;
+
+            const totalComm = price * (rate / 100);
+            const agentShare = totalComm * (agentSplit / 100);
+            const afterAgency = agentShare * ((100 - agencySplit) / 100);
+            const agencyTake = agentShare - afterAgency;
+            const gst = afterAgency * 0.09;
+            const netTakeHome = afterAgency - gst;
+
+            document.getElementById('commission-result').style.display = 'block';
+            document.getElementById('commission-result').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Total Commission (${rate}%)</span>
+                    <span class="result-value">${formatCurrency(totalComm)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Your Share (${agentSplit}%)</span>
+                    <span class="result-value">${formatCurrency(agentShare)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Agency Take (${agencySplit}%)</span>
+                    <span class="result-value">${formatCurrency(agencyTake)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">GST (9%)</span>
+                    <span class="result-value">${formatCurrency(gst)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><strong>Net Take-Home</strong></span>
+                    <span class="result-value highlight">${formatCurrency(netTakeHome)}</span>
+                </div>
+            `;
+        }
+
+        // BSD Calculator
+        function calculateBSD() {
+            const price = parseFloat(document.getElementById('bsd-price').value) || 0;
+
+            let bsd = 0;
+            let remaining = price;
+            const brackets = [
+                { limit: 180000, rate: 0.01 },
+                { limit: 180000, rate: 0.02 },
+                { limit: 640000, rate: 0.03 },
+                { limit: 500000, rate: 0.04 },
+                { limit: 1500000, rate: 0.05 },
+                { limit: Infinity, rate: 0.06 }
+            ];
+
+            let breakdown = [];
+            let cumulative = 0;
+
+            for (const bracket of brackets) {
+                if (remaining <= 0) break;
+                const taxable = Math.min(remaining, bracket.limit);
+                const tax = taxable * bracket.rate;
+                bsd += tax;
+                remaining -= taxable;
+                cumulative += taxable;
+
+                if (taxable > 0) {
+                    breakdown.push({
+                        range: bracket.limit === Infinity ?
+                            `Above ${formatCurrency(cumulative - taxable)}` :
+                            `${formatCurrency(cumulative - taxable)} - ${formatCurrency(cumulative)}`,
+                        rate: `${(bracket.rate * 100).toFixed(1)}%`,
+                        amount: taxable,
+                        tax: tax
+                    });
+                }
+            }
+
+            let breakdownHtml = breakdown.map(b => `
+                <tr>
+                    <td>${b.range}</td>
+                    <td>${b.rate}</td>
+                    <td>${formatCurrency(b.amount)}</td>
+                    <td>${formatCurrency(b.tax)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('bsd-result').style.display = 'block';
+            document.getElementById('bsd-result').innerHTML = `
+                <h4 style="margin-bottom: 15px;">BSD Breakdown</h4>
+                <table class="breakdown-table">
+                    <tr><th>Price Range</th><th>Rate</th><th>Amount</th><th>BSD</th></tr>
+                    ${breakdownHtml}
+                </table>
+                <div class="result-item" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #667eea;">
+                    <span class="result-label"><strong>Total BSD Payable</strong></span>
+                    <span class="result-value highlight">${formatCurrency(bsd)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Effective BSD Rate</span>
+                    <span class="result-value">${((bsd / price) * 100).toFixed(2)}%</span>
+                </div>
+            `;
+        }
+
+        // ABSD Calculator
+        function calculateABSD() {
+            const price = parseFloat(document.getElementById('absd-price').value) || 0;
+            const profile = document.getElementById('absd-profile').value;
+
+            const rates = {
+                'sc1': { rate: 0, label: 'Singapore Citizen - 1st Property' },
+                'sc2': { rate: 20, label: 'Singapore Citizen - 2nd Property' },
+                'sc3': { rate: 30, label: 'Singapore Citizen - 3rd+ Property' },
+                'pr1': { rate: 5, label: 'Permanent Resident - 1st Property' },
+                'pr2': { rate: 30, label: 'Permanent Resident - 2nd Property' },
+                'pr3': { rate: 35, label: 'Permanent Resident - 3rd+ Property' },
+                'foreigner': { rate: 60, label: 'Foreigner' },
+                'entity': { rate: 65, label: 'Entity (Company/Trust)' }
+            };
+
+            const selected = rates[profile];
+            const absd = price * (selected.rate / 100);
+
+            // Also calculate BSD for total
+            let bsd = 0;
+            let remaining = price;
+            const brackets = [
+                { limit: 180000, rate: 0.01 },
+                { limit: 180000, rate: 0.02 },
+                { limit: 640000, rate: 0.03 },
+                { limit: 500000, rate: 0.04 },
+                { limit: 1500000, rate: 0.05 },
+                { limit: Infinity, rate: 0.06 }
+            ];
+            for (const bracket of brackets) {
+                if (remaining <= 0) break;
+                const taxable = Math.min(remaining, bracket.limit);
+                bsd += taxable * bracket.rate;
+                remaining -= taxable;
+            }
+
+            const totalStampDuty = bsd + absd;
+
+            document.getElementById('absd-result').style.display = 'block';
+            document.getElementById('absd-result').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Buyer Profile</span>
+                    <span class="result-value">${selected.label}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">ABSD Rate</span>
+                    <span class="result-value">${selected.rate}%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">ABSD Amount</span>
+                    <span class="result-value highlight">${formatCurrency(absd)}</span>
+                </div>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #e9ecef;">
+                <div class="result-item">
+                    <span class="result-label">BSD</span>
+                    <span class="result-value">${formatCurrency(bsd)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">ABSD</span>
+                    <span class="result-value">${formatCurrency(absd)}</span>
+                </div>
+                <div class="result-item" style="background: #f0f0f0; margin: 10px -20px -20px; padding: 15px 20px; border-radius: 0 0 5px 5px;">
+                    <span class="result-label"><strong>Total Stamp Duty</strong></span>
+                    <span class="result-value highlight">${formatCurrency(totalStampDuty)}</span>
+                </div>
+            `;
+        }
+
+        // Mortgage Calculator
+        function calculateMortgage() {
+            const loan = parseFloat(document.getElementById('mortgage-loan').value) || 0;
+            const rate = parseFloat(document.getElementById('mortgage-rate').value) / 100 / 12;
+            const tenure = parseInt(document.getElementById('mortgage-tenure').value) * 12;
+            const propertyType = document.getElementById('mortgage-type').value;
+
+            const maxTenure = propertyType === 'hdb' ? 25 : 35;
+            const years = parseInt(document.getElementById('mortgage-tenure').value);
+
+            if (years > maxTenure) {
+                document.getElementById('mortgage-result').style.display = 'block';
+                document.getElementById('mortgage-result').innerHTML = `
+                    <div class="warning-box">
+                        Maximum loan tenure for ${propertyType === 'hdb' ? 'HDB' : 'Private'} property is ${maxTenure} years.
+                    </div>
+                `;
+                return;
+            }
+
+            // Monthly payment formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+            const monthly = loan * (rate * Math.pow(1 + rate, tenure)) / (Math.pow(1 + rate, tenure) - 1);
+            const totalPayment = monthly * tenure;
+            const totalInterest = totalPayment - loan;
+
+            document.getElementById('mortgage-result').style.display = 'block';
+            document.getElementById('mortgage-result').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label"><strong>Monthly Payment</strong></span>
+                    <span class="result-value highlight">${formatCurrency(monthly)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Loan Amount</span>
+                    <span class="result-value">${formatCurrency(loan)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Interest</span>
+                    <span class="result-value">${formatCurrency(totalInterest)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Payment (${years} years)</span>
+                    <span class="result-value">${formatCurrency(totalPayment)}</span>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <strong>Interest to Principal Ratio:</strong> ${(totalInterest / loan * 100).toFixed(1)}%<br>
+                    You'll pay ${formatCurrency(totalInterest)} in interest over the loan period.
+                </div>
+            `;
+        }
+
+        // TDSR Calculator
+        function calculateTDSR() {
+            const income = parseFloat(document.getElementById('tdsr-income').value) || 0;
+            const existing = parseFloat(document.getElementById('tdsr-existing').value) || 0;
+            const proposed = parseFloat(document.getElementById('tdsr-proposed').value) || 0;
+
+            const maxDebt = income * 0.55;
+            const totalDebt = existing + proposed;
+            const tdsr = (totalDebt / income) * 100;
+            const remaining = maxDebt - totalDebt;
+
+            const isPass = tdsr <= 55;
+
+            document.getElementById('tdsr-result').style.display = 'block';
+            document.getElementById('tdsr-result').innerHTML = `
+                <div class="${isPass ? 'success-box' : 'error-box'}">
+                    <strong>${isPass ? '✓ TDSR Check Passed' : '✗ TDSR Limit Exceeded'}</strong><br>
+                    ${isPass ? 'Your debt obligations are within the 55% limit.' : 'Your total debt exceeds the 55% TDSR limit.'}
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Gross Monthly Income</span>
+                    <span class="result-value">${formatCurrency(income)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Maximum Debt (55%)</span>
+                    <span class="result-value">${formatCurrency(maxDebt)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Debt Obligations</span>
+                    <span class="result-value">${formatCurrency(totalDebt)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><strong>Your TDSR</strong></span>
+                    <span class="result-value highlight" style="color: ${isPass ? '#4caf50' : '#f44336'}">${tdsr.toFixed(1)}%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Remaining Capacity</span>
+                    <span class="result-value">${formatCurrency(Math.max(0, remaining))}</span>
+                </div>
+            `;
+        }
+
+        // LTV Calculator
+        function calculateLTV() {
+            const price = parseFloat(document.getElementById('ltv-price').value) || 0;
+            const scenario = document.getElementById('ltv-scenario').value;
+            const propertyType = document.getElementById('ltv-type').value;
+
+            const ltvRates = {
+                'first-no': 75,
+                'first-one': 45,
+                'first-two': 35,
+                'second-no': 45,
+                'second-one': 25
+            };
+
+            const ltv = ltvRates[scenario];
+            const maxLoan = price * (ltv / 100);
+            const minDownpayment = price - maxLoan;
+            const cashComponent = price * 0.05; // Minimum 5% cash for private, 10% for HDB (simplified)
+
+            document.getElementById('ltv-result').style.display = 'block';
+            document.getElementById('ltv-result').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Property Price</span>
+                    <span class="result-value">${formatCurrency(price)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">LTV Limit</span>
+                    <span class="result-value">${ltv}%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><strong>Maximum Loan Amount</strong></span>
+                    <span class="result-value highlight">${formatCurrency(maxLoan)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Minimum Downpayment</span>
+                    <span class="result-value">${formatCurrency(minDownpayment)} (${100 - ltv}%)</span>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <strong>Note:</strong> Minimum 5% of property price (${formatCurrency(cashComponent)}) must be paid in cash for private properties. CPF can be used for the remainder of the downpayment.
+                </div>
+            `;
+        }
+
+        // Rental Yield Calculator
+        function calculateYield() {
+            const price = parseFloat(document.getElementById('yield-price').value) || 0;
+            const rental = parseFloat(document.getElementById('yield-rental').value) || 0;
+            const maintenance = parseFloat(document.getElementById('yield-maintenance').value) || 0;
+            const propertyTax = parseFloat(document.getElementById('yield-tax').value) || 0;
+            const other = parseFloat(document.getElementById('yield-other').value) || 0;
+            const vacancy = parseFloat(document.getElementById('yield-vacancy').value) || 0;
+
+            const annualRental = rental * 12;
+            const effectiveRental = rental * (12 - vacancy);
+            const annualMaintenance = maintenance * 12;
+            const totalExpenses = annualMaintenance + propertyTax + other;
+            const netIncome = effectiveRental - totalExpenses;
+
+            const grossYield = (annualRental / price) * 100;
+            const netYield = (netIncome / price) * 100;
+
+            document.getElementById('yield-result').style.display = 'block';
+            document.getElementById('yield-result').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Annual Rental Income</span>
+                    <span class="result-value">${formatCurrency(annualRental)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Effective Rental (after vacancy)</span>
+                    <span class="result-value">${formatCurrency(effectiveRental)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Annual Expenses</span>
+                    <span class="result-value">${formatCurrency(totalExpenses)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Net Annual Income</span>
+                    <span class="result-value">${formatCurrency(netIncome)}</span>
+                </div>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #e9ecef;">
+                <div class="result-item">
+                    <span class="result-label"><strong>Gross Rental Yield</strong></span>
+                    <span class="result-value highlight">${grossYield.toFixed(2)}%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><strong>Net Rental Yield</strong></span>
+                    <span class="result-value highlight">${netYield.toFixed(2)}%</span>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <strong>Benchmark:</strong> Average rental yield in Singapore is typically 2-3% for condos and 4-5% for HDB. A yield above 3% is generally considered good.
+                </div>
+            `;
+        }
+
+        // PSF Calculator
+        function calculatePSF() {
+            const price = parseFloat(document.getElementById('psf-price').value) || 0;
+            let area = parseFloat(document.getElementById('psf-area').value) || 0;
+            const unit = document.getElementById('psf-unit').value;
+
+            // Convert sqm to sqft if needed (1 sqm = 10.764 sqft)
+            let areaInSqft = unit === 'sqm' ? area * 10.764 : area;
+            let areaInSqm = unit === 'sqft' ? area / 10.764 : area;
+
+            const psf = price / areaInSqft;
+            const psm = price / areaInSqm;
+
+            document.getElementById('psf-result').style.display = 'block';
+            document.getElementById('psf-result').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Property Price</span>
+                    <span class="result-value">${formatCurrency(price)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Floor Area</span>
+                    <span class="result-value">${formatNumber(areaInSqft.toFixed(0))} sqft / ${formatNumber(areaInSqm.toFixed(0))} sqm</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><strong>Price per Square Foot</strong></span>
+                    <span class="result-value highlight">${formatCurrency(psf)}/sqft</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Price per Square Meter</span>
+                    <span class="result-value">${formatCurrency(psm)}/sqm</span>
+                </div>
+            `;
+        }
+
+        // COV Calculator
+        function calculateCOV() {
+            const price = parseFloat(document.getElementById('cov-price').value) || 0;
+            const valuation = parseFloat(document.getElementById('cov-valuation').value) || 0;
+
+            const cov = price - valuation;
+            const covPercent = ((cov / valuation) * 100);
+
+            let statusBox = '';
+            if (cov > 0) {
+                statusBox = `<div class="warning-box">
+                    <strong>Cash Over Valuation Required</strong><br>
+                    You'll need to pay ${formatCurrency(cov)} in cash above the valuation. This cannot be financed by loan or CPF.
+                </div>`;
+            } else if (cov < 0) {
+                statusBox = `<div class="success-box">
+                    <strong>Below Valuation</strong><br>
+                    Good news! The purchase price is ${formatCurrency(Math.abs(cov))} below valuation.
+                </div>`;
+            } else {
+                statusBox = `<div class="info-box">
+                    <strong>At Valuation</strong><br>
+                    The purchase price matches the valuation exactly.
+                </div>`;
+            }
+
+            document.getElementById('cov-result').style.display = 'block';
+            document.getElementById('cov-result').innerHTML = `
+                ${statusBox}
+                <div class="result-item">
+                    <span class="result-label">Purchase Price</span>
+                    <span class="result-value">${formatCurrency(price)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Bank/HDB Valuation</span>
+                    <span class="result-value">${formatCurrency(valuation)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><strong>Cash Over Valuation</strong></span>
+                    <span class="result-value highlight" style="color: ${cov > 0 ? '#ff9800' : '#4caf50'}">${formatCurrency(cov)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">COV Percentage</span>
+                    <span class="result-value">${covPercent.toFixed(1)}%</span>
+                </div>
+            `;
+        }
+
+        // Personal Tax Calculator
+        function calculateTax() {
+            const income = parseFloat(document.getElementById('tax-income').value) || 0;
+            const cpf = parseFloat(document.getElementById('tax-cpf').value) || 0;
+            const reliefs = parseFloat(document.getElementById('tax-reliefs').value) || 0;
+            const isResident = document.getElementById('tax-resident').value === 'resident';
+
+            const chargeableIncome = Math.max(0, income - cpf - reliefs);
+
+            let tax = 0;
+            let breakdown = [];
+
+            if (!isResident) {
+                // Non-resident flat rate
+                tax = chargeableIncome * 0.24;
+                breakdown.push({ range: 'All income', rate: '24%', amount: chargeableIncome, tax: tax });
+            } else {
+                // Resident progressive rates (YA2024)
+                const brackets = [
+                    { limit: 20000, rate: 0 },
+                    { limit: 10000, rate: 0.02 },
+                    { limit: 10000, rate: 0.035 },
+                    { limit: 40000, rate: 0.07 },
+                    { limit: 40000, rate: 0.115 },
+                    { limit: 40000, rate: 0.15 },
+                    { limit: 40000, rate: 0.18 },
+                    { limit: 40000, rate: 0.19 },
+                    { limit: 40000, rate: 0.195 },
+                    { limit: 40000, rate: 0.20 },
+                    { limit: 40000, rate: 0.22 },
+                    { limit: 40000, rate: 0.23 },
+                    { limit: Infinity, rate: 0.24 }
+                ];
+
+                let remaining = chargeableIncome;
+                let cumulative = 0;
+
+                for (const bracket of brackets) {
+                    if (remaining <= 0) break;
+                    const taxable = Math.min(remaining, bracket.limit);
+                    const bracketTax = taxable * bracket.rate;
+                    tax += bracketTax;
+                    remaining -= taxable;
+
+                    if (taxable > 0) {
+                        breakdown.push({
+                            range: bracket.limit === Infinity ?
+                                `Above ${formatCurrency(cumulative)}` :
+                                `${formatCurrency(cumulative)} - ${formatCurrency(cumulative + bracket.limit)}`,
+                            rate: `${(bracket.rate * 100).toFixed(1)}%`,
+                            amount: taxable,
+                            tax: bracketTax
+                        });
+                    }
+                    cumulative += bracket.limit === Infinity ? taxable : bracket.limit;
+                }
+            }
+
+            const effectiveRate = chargeableIncome > 0 ? (tax / chargeableIncome) * 100 : 0;
+            const monthlyTax = tax / 12;
+
+            let breakdownHtml = breakdown.map(b => `
+                <tr>
+                    <td>${b.range}</td>
+                    <td>${b.rate}</td>
+                    <td>${formatCurrency(b.tax)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('tax-result').style.display = 'block';
+            document.getElementById('tax-result').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Gross Income</span>
+                    <span class="result-value">${formatCurrency(income)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Less: CPF & Reliefs</span>
+                    <span class="result-value">-${formatCurrency(cpf + reliefs)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Chargeable Income</span>
+                    <span class="result-value">${formatCurrency(chargeableIncome)}</span>
+                </div>
+                <h4 style="margin: 20px 0 10px;">Tax Breakdown</h4>
+                <table class="breakdown-table">
+                    <tr><th>Income Range</th><th>Rate</th><th>Tax</th></tr>
+                    ${breakdownHtml}
+                </table>
+                <div class="result-item" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #667eea;">
+                    <span class="result-label"><strong>Total Tax Payable</strong></span>
+                    <span class="result-value highlight">${formatCurrency(tax)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Monthly Tax (estimated)</span>
+                    <span class="result-value">${formatCurrency(monthlyTax)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Effective Tax Rate</span>
+                    <span class="result-value">${effectiveRate.toFixed(2)}%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Net Income After Tax</span>
+                    <span class="result-value">${formatCurrency(income - tax)}</span>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
