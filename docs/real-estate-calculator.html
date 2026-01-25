@@ -359,6 +359,7 @@
                 <button class="sub-tab active" onclick="switchSubTab('loans', 'mortgage')">Mortgage</button>
                 <button class="sub-tab" onclick="switchSubTab('loans', 'tdsr')">TDSR</button>
                 <button class="sub-tab" onclick="switchSubTab('loans', 'ltv')">LTV</button>
+                <button class="sub-tab" onclick="switchSubTab('loans', 'maxloan')">Max Loan</button>
             </div>
 
             <!-- Mortgage Calculator -->
@@ -444,6 +445,50 @@
                 </div>
                 <button class="calculate" onclick="calculateLTV()">Calculate Maximum Loan</button>
                 <div id="ltv-result" class="result-box" style="display:none;"></div>
+            </div>
+
+            <!-- Max Loan Calculator -->
+            <div id="loans-maxloan" class="sub-content">
+                <h2 class="section-title">Maximum Loan Calculator</h2>
+                <div class="info-box">
+                    Calculate the maximum loan you can afford based on your income and TDSR limit. The TDSR (Total Debt Servicing Ratio) caps your total monthly debt obligations at 55% of your gross monthly income.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Gross Monthly Income (S$)</label>
+                        <input type="number" id="maxloan-income" placeholder="e.g., 10000">
+                    </div>
+                    <div class="form-group">
+                        <label>Existing Monthly Debt (S$)</label>
+                        <input type="number" id="maxloan-existing" placeholder="e.g., 500" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (% per annum)</label>
+                        <input type="number" id="maxloan-rate" value="3.5" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Tenure (Years)</label>
+                        <input type="number" id="maxloan-tenure" value="25" min="1" max="35">
+                    </div>
+                    <div class="form-group">
+                        <label>Property Type</label>
+                        <select id="maxloan-type">
+                            <option value="hdb">HDB (max 25 years)</option>
+                            <option value="private">Private Property (max 35 years)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>LTV Scenario</label>
+                        <select id="maxloan-ltv">
+                            <option value="75">1st Loan, No Outstanding (75%)</option>
+                            <option value="45">1st Loan, 1 Outstanding (45%)</option>
+                            <option value="35">1st Loan, 2+ Outstanding (35%)</option>
+                            <option value="25">2nd Loan, 1+ Outstanding (25%)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="calculate" onclick="calculateMaxLoan()">Calculate Max Loan</button>
+                <div id="maxloan-result" class="result-box" style="display:none;"></div>
             </div>
         </div>
 
@@ -919,6 +964,116 @@
                 </div>
                 <div class="info-box" style="margin-top: 15px;">
                     <strong>Note:</strong> Minimum 5% of property price (${formatCurrency(cashComponent)}) must be paid in cash for private properties. CPF can be used for the remainder of the downpayment.
+                </div>
+            `;
+        }
+
+        // Max Loan Calculator
+        function calculateMaxLoan() {
+            const income = parseFloat(document.getElementById('maxloan-income').value) || 0;
+            const existing = parseFloat(document.getElementById('maxloan-existing').value) || 0;
+            const rate = parseFloat(document.getElementById('maxloan-rate').value) / 100 / 12;
+            const years = parseInt(document.getElementById('maxloan-tenure').value);
+            const propertyType = document.getElementById('maxloan-type').value;
+            const ltvPercent = parseInt(document.getElementById('maxloan-ltv').value);
+
+            const maxTenure = propertyType === 'hdb' ? 25 : 35;
+
+            if (years > maxTenure) {
+                document.getElementById('maxloan-result').style.display = 'block';
+                document.getElementById('maxloan-result').innerHTML = `
+                    <div class="warning-box">
+                        Maximum loan tenure for ${propertyType === 'hdb' ? 'HDB' : 'Private'} property is ${maxTenure} years.
+                    </div>
+                `;
+                return;
+            }
+
+            const tenure = years * 12;
+
+            // Max monthly mortgage based on TDSR (55% of income minus existing debt)
+            const maxMonthlyMortgage = (income * 0.55) - existing;
+
+            if (maxMonthlyMortgage <= 0) {
+                document.getElementById('maxloan-result').style.display = 'block';
+                document.getElementById('maxloan-result').innerHTML = `
+                    <div class="error-box">
+                        <strong>TDSR Limit Exceeded</strong><br>
+                        Your existing debt obligations already exceed or meet the 55% TDSR limit. You need to reduce existing debt before taking a new loan.
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Maximum Monthly Debt (55%)</span>
+                        <span class="result-value">${formatCurrency(income * 0.55)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Existing Monthly Debt</span>
+                        <span class="result-value">${formatCurrency(existing)}</span>
+                    </div>
+                `;
+                return;
+            }
+
+            // Calculate max loan from monthly payment
+            // M = L * [r(1+r)^n] / [(1+r)^n - 1]
+            // Solving for L: L = M * [(1+r)^n - 1] / [r(1+r)^n]
+            const factor = Math.pow(1 + rate, tenure);
+            const maxLoan = maxMonthlyMortgage * (factor - 1) / (rate * factor);
+
+            // Calculate max property price based on LTV
+            const maxPropertyPrice = maxLoan / (ltvPercent / 100);
+            const minDownpayment = maxPropertyPrice - maxLoan;
+            const cashDownpayment = maxPropertyPrice * 0.05; // Minimum 5% cash
+
+            // Calculate total payment for reference
+            const totalPayment = maxMonthlyMortgage * tenure;
+            const totalInterest = totalPayment - maxLoan;
+
+            document.getElementById('maxloan-result').style.display = 'block';
+            document.getElementById('maxloan-result').innerHTML = `
+                <div class="success-box">
+                    <strong>Your Maximum Borrowing Power</strong><br>
+                    Based on your income and TDSR limit, here's what you can afford.
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Gross Monthly Income</span>
+                    <span class="result-value">${formatCurrency(income)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">TDSR Limit (55%)</span>
+                    <span class="result-value">${formatCurrency(income * 0.55)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Less: Existing Debt</span>
+                    <span class="result-value">-${formatCurrency(existing)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Available for Mortgage</span>
+                    <span class="result-value">${formatCurrency(maxMonthlyMortgage)}/month</span>
+                </div>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #e9ecef;">
+                <div class="result-item">
+                    <span class="result-label"><strong>Maximum Loan Amount</strong></span>
+                    <span class="result-value highlight">${formatCurrency(maxLoan)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><strong>Max Property Price (${ltvPercent}% LTV)</strong></span>
+                    <span class="result-value highlight">${formatCurrency(maxPropertyPrice)}</span>
+                </div>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #e9ecef;">
+                <div class="result-item">
+                    <span class="result-label">Minimum Downpayment (${100 - ltvPercent}%)</span>
+                    <span class="result-value">${formatCurrency(minDownpayment)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Min Cash Required (5%)</span>
+                    <span class="result-value">${formatCurrency(cashDownpayment)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Interest (${years} years)</span>
+                    <span class="result-value">${formatCurrency(totalInterest)}</span>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <strong>Note:</strong> This calculation is based on TDSR constraints. Actual loan approval depends on credit assessment, age, property type, and bank's lending criteria. Banks may apply stress-tested rates (typically 4% or higher) for assessment.
                 </div>
             `;
         }
