@@ -413,6 +413,43 @@
             text-align: right;
         }
 
+        /* View Tabs */
+        .view-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .view-tab {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            color: #999;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .view-tab:hover {
+            color: #667eea;
+        }
+
+        .view-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* Date Label for All Tasks view */
+        .task-date-label {
+            font-size: 12px;
+            color: #999;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
         @media (max-width: 768px) {
             .content {
                 padding: 20px;
@@ -454,8 +491,14 @@
         </div>
 
         <div class="content">
+            <!-- View Tabs -->
+            <div class="view-tabs">
+                <button class="view-tab active" onclick="switchView('daily')" data-view="daily">Daily View</button>
+                <button class="view-tab" onclick="switchView('all')" data-view="all">All Tasks</button>
+            </div>
+
             <!-- Date Navigation -->
-            <div class="date-nav">
+            <div class="date-nav" id="dateNav">
                 <button onclick="changeDate(-1)">&larr; Prev</button>
                 <button class="today-btn" onclick="goToToday()">Today</button>
                 <div class="current-date" id="currentDate"></div>
@@ -508,6 +551,7 @@
         // State
         let currentDate = new Date();
         let currentFilter = 'all';
+        let currentView = 'daily';
 
         // Helpers
         function getDateKey(date) {
@@ -691,8 +735,112 @@
             render();
         }
 
+        // View Switching
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            render();
+        }
+
+        function getAllTasks() {
+            const all = JSON.parse(localStorage.getItem('simple_tools_todos') || '{}');
+            const tasks = [];
+            for (const dateKey of Object.keys(all)) {
+                for (const task of all[dateKey]) {
+                    tasks.push({ ...task, dateKey: dateKey });
+                }
+            }
+            return tasks;
+        }
+
+        function formatDateKey(dateKey) {
+            const [y, m, d] = dateKey.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            const today = new Date();
+            if (getDateKey(date) === getDateKey(today)) return 'Today';
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function toggleTaskByDate(id, dateKey) {
+            const tasks = getTasks(dateKey);
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks(dateKey, tasks);
+                render();
+            }
+        }
+
+        function deleteTaskByDate(id, dateKey) {
+            let tasks = getTasks(dateKey);
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks(dateKey, tasks);
+            render();
+        }
+
+        function editTaskByDate(id, dateKey) {
+            const tasks = getTasks(dateKey);
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+
+            const span = document.querySelector(`[data-task-id="${id}"] .task-text`);
+            span.setAttribute('contenteditable', 'true');
+            span.classList.add('editing');
+            span.focus();
+
+            const range = document.createRange();
+            range.selectNodeContents(span);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            function save() {
+                const newText = span.textContent.trim();
+                span.removeAttribute('contenteditable');
+                span.classList.remove('editing');
+                if (newText && newText !== task.text) {
+                    task.text = newText;
+                    saveTasks(dateKey, tasks);
+                    showMessage('Task updated', 'success');
+                }
+                render();
+            }
+
+            span.onblur = save;
+            span.onkeydown = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    save();
+                }
+                if (e.key === 'Escape') {
+                    span.textContent = task.text;
+                    span.removeAttribute('contenteditable');
+                    span.classList.remove('editing');
+                    render();
+                }
+            };
+        }
+
         // Render
         function render() {
+            const isAllView = currentView === 'all';
+
+            // Show/hide daily-specific elements
+            document.getElementById('dateNav').style.display = isAllView ? 'none' : 'flex';
+            document.querySelector('.add-task-form').style.display = isAllView ? 'none' : 'flex';
+            document.querySelector('.filters').style.display = isAllView ? 'none' : 'flex';
+
+            if (isAllView) {
+                renderAllTasksView();
+            } else {
+                renderDailyView();
+            }
+        }
+
+        function renderDailyView() {
             updateDateDisplay();
 
             const dateKey = getDateKey(currentDate);
@@ -761,6 +909,68 @@
 
             // Show/hide bottom actions
             document.getElementById('bottomActions').style.display = total > 0 ? 'flex' : 'none';
+        }
+
+        function renderAllTasksView() {
+            const allTasks = getAllTasks();
+
+            // Sort: undone first, then by priority, then by date (newest first)
+            const priorityOrder = { high: 0, medium: 1, low: 2 };
+            allTasks.sort((a, b) => {
+                if (a.completed !== b.completed) return a.completed ? 1 : -1;
+                if (a.completed === b.completed) {
+                    const pDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+                    if (pDiff !== 0) return pDiff;
+                }
+                return b.dateKey.localeCompare(a.dateKey);
+            });
+
+            // Stats
+            const total = allTasks.length;
+            const completed = allTasks.filter(t => t.completed).length;
+            const active = total - completed;
+
+            document.getElementById('statsBar').innerHTML = `
+                <div class="stat-badge"><strong>${total}</strong> total</div>
+                <div class="stat-badge"><strong>${active}</strong> active</div>
+                <div class="stat-badge"><strong>${completed}</strong> completed</div>
+            `;
+
+            // Progress
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressText').textContent = total > 0
+                ? pct + '% complete (' + completed + '/' + total + ')'
+                : 'No tasks yet';
+
+            // Task List
+            const list = document.getElementById('taskList');
+            if (allTasks.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">&#128221;</div>
+                        <p>No tasks yet. Switch to Daily View to add tasks!</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = allTasks.map(task => `
+                    <li class="task-item ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
+                        <input type="checkbox" class="task-checkbox"
+                            ${task.completed ? 'checked' : ''}
+                            onchange="toggleTaskByDate(${task.id}, '${task.dateKey}')">
+                        <span class="task-text">${escapeHtml(task.text)}</span>
+                        <span class="task-date-label">${formatDateKey(task.dateKey)}</span>
+                        <span class="priority-tag priority-${task.priority}">${task.priority}</span>
+                        <div class="task-actions">
+                            <button class="edit-btn" onclick="editTaskByDate(${task.id}, '${task.dateKey}')" title="Edit">&#9998;</button>
+                            <button class="delete-btn" onclick="deleteTaskByDate(${task.id}, '${task.dateKey}')" title="Delete">&#10005;</button>
+                        </div>
+                    </li>
+                `).join('');
+            }
+
+            // Hide bottom actions in all-tasks view
+            document.getElementById('bottomActions').style.display = 'none';
         }
 
         function escapeHtml(text) {
