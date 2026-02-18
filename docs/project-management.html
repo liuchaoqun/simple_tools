@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +35,10 @@
             text-align: center;
         }
 
-        h1 { font-size: 28px; font-weight: 600; }
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
 
         .nav {
             background: #34495e;
@@ -47,7 +51,9 @@
             font-size: 14px;
         }
 
-        .nav a:hover { text-decoration: underline; }
+        .nav a:hover {
+            text-decoration: underline;
+        }
 
         /* Toolbar */
         .toolbar {
@@ -88,17 +94,36 @@
 
         .toolbar button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .btn-primary { background: #667eea; }
-        .btn-primary:hover { background: #5568d3; }
-        .btn-danger { background: #dc3545; }
-        .btn-danger:hover { background: #c82333; }
-        .btn-secondary { background: #6c757d; }
-        .btn-secondary:hover { background: #5a6268; }
+        .btn-primary {
+            background: #667eea;
+        }
 
-        .toolbar-spacer { flex: 1; }
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .toolbar-spacer {
+            flex: 1;
+        }
 
         .toolbar .search-box {
             padding: 9px 14px;
@@ -154,10 +179,21 @@
             font-weight: 600;
         }
 
-        .col-todo .column-header { border-bottom-color: #667eea; }
-        .col-progress .column-header { border-bottom-color: #f59e0b; }
-        .col-review .column-header { border-bottom-color: #8b5cf6; }
-        .col-done .column-header { border-bottom-color: #10b981; }
+        .col-todo .column-header {
+            border-bottom-color: #667eea;
+        }
+
+        .col-progress .column-header {
+            border-bottom-color: #f59e0b;
+        }
+
+        .col-review .column-header {
+            border-bottom-color: #8b5cf6;
+        }
+
+        .col-done .column-header {
+            border-bottom-color: #10b981;
+        }
 
         .column-body {
             padding: 10px;
@@ -177,14 +213,14 @@
             border-radius: 6px;
             padding: 14px;
             margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             cursor: grab;
             transition: all 0.2s;
             border-left: 4px solid transparent;
         }
 
         .task-card:hover {
-            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
         }
 
         .task-card.dragging {
@@ -192,9 +228,17 @@
             transform: rotate(2deg);
         }
 
-        .task-card.priority-high { border-left-color: #dc2626; }
-        .task-card.priority-medium { border-left-color: #f59e0b; }
-        .task-card.priority-low { border-left-color: #3b82f6; }
+        .task-card.priority-high {
+            border-left-color: #dc2626;
+        }
+
+        .task-card.priority-medium {
+            border-left-color: #f59e0b;
+        }
+
+        .task-card.priority-low {
+            border-left-color: #3b82f6;
+        }
 
         .task-card-title {
             font-size: 14px;
@@ -238,9 +282,20 @@
             text-transform: uppercase;
         }
 
-        .tag-priority-high { background: #fee2e2; color: #dc2626; }
-        .tag-priority-medium { background: #fef3c7; color: #d97706; }
-        .tag-priority-low { background: #dbeafe; color: #2563eb; }
+        .tag-priority-high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .tag-priority-medium {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .tag-priority-low {
+            background: #dbeafe;
+            color: #2563eb;
+        }
 
         .tag-label {
             background: #e0e7ff;
@@ -284,8 +339,15 @@
             box-shadow: none;
         }
 
-        .task-card-actions .edit-btn:hover { background: #e0e7ff; color: #667eea; }
-        .task-card-actions .delete-btn:hover { background: #fee2e2; color: #dc2626; }
+        .task-card-actions .edit-btn:hover {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .task-card-actions .delete-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
 
         /* Add task button in column */
         .add-task-inline {
@@ -321,7 +383,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -339,7 +401,7 @@
             max-width: 520px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .modal-header {
@@ -486,6 +548,113 @@
             letter-spacing: 0.5px;
         }
 
+        /* Export button */
+        .btn-export {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-export:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Export modal extras */
+        .export-format-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .export-format-options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .export-format-options label:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .export-format-options input[type="radio"] {
+            accent-color: #667eea;
+            width: 16px;
+            height: 16px;
+        }
+
+        .export-format-options input[type="radio"]:checked+span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .export-format-options label:has(input:checked) {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .export-preview {
+            margin-top: 16px;
+            background: #1e1e2e;
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 250px;
+            overflow: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #cdd6f4;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .export-preview::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .export-preview::-webkit-scrollbar-thumb {
+            background: #45475a;
+            border-radius: 3px;
+        }
+
+        .modal-footer .export-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .modal-footer .export-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .export-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         /* Message */
         .message-area {
             padding: 0 30px;
@@ -498,8 +667,17 @@
             margin-bottom: 10px;
         }
 
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
 
         /* Empty */
         .empty-column {
@@ -531,9 +709,15 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+
+            .export-format-options {
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -550,6 +734,7 @@
             <button class="btn-primary" onclick="openProjectModal()">+ New Project</button>
             <button class="btn-secondary" onclick="renameProject()">Rename</button>
             <button class="btn-danger" onclick="deleteProject()">Delete Project</button>
+            <button class="btn-export" id="exportBtn" onclick="openExportModal()">&#128229; Export</button>
             <div class="toolbar-spacer"></div>
             <input type="text" class="search-box" id="searchBox" placeholder="Search tasks..." oninput="renderBoard()">
         </div>
@@ -566,8 +751,8 @@
                     <span>To Do</span>
                     <span class="count" id="countTodo">0</span>
                 </div>
-                <div class="column-body" id="colTodo" data-status="todo"
-                    ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                <div class="column-body" id="colTodo" data-status="todo" ondragover="onDragOver(event)"
+                    ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
                 </div>
                 <div class="add-task-inline">
                     <button onclick="openTaskModal('todo')">+ Add Task</button>
@@ -579,8 +764,8 @@
                     <span>In Progress</span>
                     <span class="count" id="countProgress">0</span>
                 </div>
-                <div class="column-body" id="colProgress" data-status="progress"
-                    ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                <div class="column-body" id="colProgress" data-status="progress" ondragover="onDragOver(event)"
+                    ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
                 </div>
                 <div class="add-task-inline">
                     <button onclick="openTaskModal('progress')">+ Add Task</button>
@@ -592,8 +777,8 @@
                     <span>Review</span>
                     <span class="count" id="countReview">0</span>
                 </div>
-                <div class="column-body" id="colReview" data-status="review"
-                    ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                <div class="column-body" id="colReview" data-status="review" ondragover="onDragOver(event)"
+                    ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
                 </div>
                 <div class="add-task-inline">
                     <button onclick="openTaskModal('review')">+ Add Task</button>
@@ -605,8 +790,8 @@
                     <span>Done</span>
                     <span class="count" id="countDone">0</span>
                 </div>
-                <div class="column-body" id="colDone" data-status="done"
-                    ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                <div class="column-body" id="colDone" data-status="done" ondragover="onDragOver(event)"
+                    ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
                 </div>
                 <div class="add-task-inline">
                     <button onclick="openTaskModal('done')">+ Add Task</button>
@@ -678,12 +863,54 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Project Name *</label>
-                    <input type="text" id="projectName" placeholder="My Project" onkeypress="if(event.key==='Enter')saveProject()">
+                    <input type="text" id="projectName" placeholder="My Project"
+                        onkeypress="if(event.key==='Enter')saveProject()">
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="cancel-btn" onclick="closeProjectModal()">Cancel</button>
                 <button class="save-btn" onclick="saveProject()">Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>&#128229; Export Project</h2>
+                <button class="close-btn" onclick="closeExportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Export Format</label>
+                    <div class="export-format-options">
+                        <label>
+                            <input type="radio" name="exportFormat" value="json" checked
+                                onchange="updateExportPreview()">
+                            <span>JSON</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="exportFormat" value="csv" onchange="updateExportPreview()">
+                            <span>CSV</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="exportFormat" value="markdown" onchange="updateExportPreview()">
+                            <span>Markdown</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Preview</label>
+                    <div class="export-preview" id="exportPreview"></div>
+                </div>
+                <div class="export-info">
+                    &#9432; The file will be downloaded to your device.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeExportModal()">Cancel</button>
+                <button class="export-btn" onclick="doExport()">Download File</button>
             </div>
         </div>
     </div>
@@ -1025,17 +1252,17 @@
                 '<div class="task-card-title">' + escapeHtml(task.title) + '</div>' +
                 descHtml +
                 '<div class="task-card-footer">' +
-                    '<div class="task-card-tags">' +
-                        '<span class="tag tag-priority-' + task.priority + '">' + task.priority + '</span>' +
-                        labelHtml +
-                    '</div>' +
-                    '<div class="task-card-actions">' +
-                        '<button class="edit-btn" onclick="openEditTaskModal(' + task.id + ')" title="Edit">&#9998;</button>' +
-                        '<button class="delete-btn" onclick="deleteTask(' + task.id + ')" title="Delete">&#10005;</button>' +
-                    '</div>' +
+                '<div class="task-card-tags">' +
+                '<span class="tag tag-priority-' + task.priority + '">' + task.priority + '</span>' +
+                labelHtml +
+                '</div>' +
+                '<div class="task-card-actions">' +
+                '<button class="edit-btn" onclick="openEditTaskModal(' + task.id + ')" title="Edit">&#9998;</button>' +
+                '<button class="delete-btn" onclick="deleteTask(' + task.id + ')" title="Delete">&#10005;</button>' +
+                '</div>' +
                 '</div>' +
                 dueDateHtml +
-            '</div>';
+                '</div>';
         }
 
         function getDueDateHtml(task) {
@@ -1060,26 +1287,161 @@
         function showMessage(text, type) {
             const area = document.getElementById('messageArea');
             area.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
-            setTimeout(function() { area.innerHTML = ''; }, 2500);
+            setTimeout(function () { area.innerHTML = ''; }, 2500);
+        }
+
+        // ========================
+        //  Export
+        // ========================
+        function openExportModal() {
+            const project = getCurrentProject();
+            if (!project || project.tasks.length === 0) {
+                showMessage('No tasks to export', 'error');
+                return;
+            }
+            document.getElementById('exportModal').classList.add('active');
+            // Reset to JSON
+            document.querySelector('input[name="exportFormat"][value="json"]').checked = true;
+            updateExportPreview();
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function getSelectedFormat() {
+            return document.querySelector('input[name="exportFormat"]:checked').value;
+        }
+
+        function generateExportContent(format) {
+            const data = loadData();
+            const project = data.projects[data.currentProject];
+            const projectName = project.name;
+            const tasks = project.tasks;
+
+            if (format === 'json') {
+                const exportObj = {
+                    projectName: projectName,
+                    exportDate: new Date().toISOString(),
+                    totalTasks: tasks.length,
+                    tasks: tasks.map(t => ({
+                        title: t.title,
+                        description: t.description || '',
+                        status: t.status,
+                        priority: t.priority,
+                        dueDate: t.dueDate || null,
+                        label: t.label || null,
+                        createdAt: t.createdAt || null,
+                        updatedAt: t.updatedAt || null
+                    }))
+                };
+                return JSON.stringify(exportObj, null, 2);
+            }
+
+            if (format === 'csv') {
+                const headers = ['Title', 'Description', 'Status', 'Priority', 'Due Date', 'Label', 'Created At', 'Updated At'];
+                const statusMap = { todo: 'To Do', progress: 'In Progress', review: 'Review', done: 'Done' };
+                const rows = tasks.map(t => [
+                    csvEscape(t.title),
+                    csvEscape(t.description || ''),
+                    statusMap[t.status] || t.status,
+                    t.priority.charAt(0).toUpperCase() + t.priority.slice(1),
+                    t.dueDate || '',
+                    csvEscape(t.label || ''),
+                    t.createdAt || '',
+                    t.updatedAt || ''
+                ]);
+                return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            }
+
+            if (format === 'markdown') {
+                const statusMap = { todo: 'To Do', progress: 'In Progress', review: 'Review', done: 'Done' };
+                let md = '# ' + projectName + '\n\n';
+                md += '> Exported on ' + new Date().toLocaleString() + '\n\n';
+
+                const statuses = ['todo', 'progress', 'review', 'done'];
+                for (const status of statuses) {
+                    const statusTasks = tasks.filter(t => t.status === status);
+                    if (statusTasks.length === 0) continue;
+                    md += '## ' + statusMap[status] + ' (' + statusTasks.length + ')\n\n';
+                    for (const t of statusTasks) {
+                        const checkbox = status === 'done' ? '[x]' : '[ ]';
+                        md += '- ' + checkbox + ' **' + t.title + '**';
+                        if (t.priority) md += ' `' + t.priority + '`';
+                        if (t.label) md += ' `' + t.label + '`';
+                        md += '\n';
+                        if (t.description) md += '  ' + t.description + '\n';
+                        if (t.dueDate) md += '  📅 Due: ' + t.dueDate + '\n';
+                        md += '\n';
+                    }
+                }
+                return md.trim();
+            }
+
+            return '';
+        }
+
+        function csvEscape(str) {
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function updateExportPreview() {
+            const format = getSelectedFormat();
+            const content = generateExportContent(format);
+            // Show a truncated preview
+            const preview = content.length > 1500 ? content.substring(0, 1500) + '\n\n... (truncated)' : content;
+            document.getElementById('exportPreview').textContent = preview;
+        }
+
+        function doExport() {
+            const format = getSelectedFormat();
+            const content = generateExportContent(format);
+            const data = loadData();
+            const projectName = data.projects[data.currentProject].name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            const timestamp = new Date().toISOString().slice(0, 10);
+
+            const extMap = { json: 'json', csv: 'csv', markdown: 'md' };
+            const mimeMap = { json: 'application/json', csv: 'text/csv', markdown: 'text/markdown' };
+
+            const filename = projectName + '_' + timestamp + '.' + extMap[format];
+            const blob = new Blob([content], { type: mimeMap[format] + ';charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            closeExportModal();
+            showMessage('Project exported as ' + extMap[format].toUpperCase(), 'success');
         }
 
         // ========================
         //  Close modals on overlay click
         // ========================
-        document.getElementById('taskModal').addEventListener('click', function(e) {
+        document.getElementById('taskModal').addEventListener('click', function (e) {
             if (e.target === this) closeTaskModal();
         });
-        document.getElementById('projectModal').addEventListener('click', function(e) {
+        document.getElementById('projectModal').addEventListener('click', function (e) {
             if (e.target === this) closeProjectModal();
+        });
+        document.getElementById('exportModal').addEventListener('click', function (e) {
+            if (e.target === this) closeExportModal();
         });
 
         // ========================
         //  Keyboard shortcut
         // ========================
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeTaskModal();
                 closeProjectModal();
+                closeExportModal();
             }
         });
 
@@ -1090,4 +1452,5 @@
         renderBoard();
     </script>
 </body>
+
 </html>
