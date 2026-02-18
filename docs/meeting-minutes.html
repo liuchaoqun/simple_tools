@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Minutes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .nav {
+            background: #34495e;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-actions button {
+            padding: 6px 16px;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 4px;
+            background: transparent;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-actions button:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0;
+        }
+
+        .tabs button {
+            padding: 10px 24px;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: none;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+        }
+
+        .tabs button:hover {
+            color: #667eea;
+        }
+
+        .tabs button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="time"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* Action Items in Form */
+        .action-items-list {
+            list-style: none;
+            margin-bottom: 10px;
+        }
+
+        .action-item-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .action-item-row input[type="text"] {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .action-item-row input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .action-item-row .assignee-input {
+            width: 120px;
+            flex: none;
+        }
+
+        .action-item-row button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            background: transparent;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .action-item-row button:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .add-action-btn {
+            padding: 8px 16px;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            background: transparent;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .add-action-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Form Buttons */
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 10px 24px;
+            background: white;
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-danger {
+            padding: 10px 24px;
+            background: white;
+            color: #dc2626;
+            border: 2px solid #dc2626;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* Meeting List */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #666;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-badge strong {
+            color: #2c3e50;
+        }
+
+        .meeting-list {
+            list-style: none;
+        }
+
+        .meeting-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .meeting-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+        }
+
+        .meeting-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .meeting-card h3 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .meeting-card-meta {
+            font-size: 13px;
+            color: #888;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meeting-card-preview {
+            font-size: 13px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .meeting-card-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .meeting-card-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: #999;
+        }
+
+        .meeting-card-actions .edit-btn:hover {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .meeting-card-actions .delete-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .action-tag {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #667eea;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* View Mode */
+        .view-meeting {
+            display: none;
+        }
+
+        .view-meeting.active {
+            display: block;
+        }
+
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .view-header h2 {
+            color: #2c3e50;
+            font-size: 22px;
+        }
+
+        .view-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .view-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .view-section {
+            margin-bottom: 20px;
+        }
+
+        .view-section h3 {
+            color: #667eea;
+            font-size: 15px;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .view-section p,
+        .view-section ul {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .view-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .view-section ul li {
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .view-section ul li:last-child {
+            border-bottom: none;
+        }
+
+        .assignee-badge {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        /* Export Panel */
+        .export-panel {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .export-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .export-panel p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .export-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .export-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .export-btn .icon {
+            font-size: 20px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        /* Message */
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .nav {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .meeting-card-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .meeting-card-actions {
+                align-self: flex-end;
+            }
+
+            .export-options {
+                grid-template-columns: 1fr;
+            }
+
+            .view-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .action-item-row {
+                flex-wrap: wrap;
+            }
+
+            .action-item-row .assignee-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>&#128221; Meeting Minutes</h1>
+        </header>
+
+        <div class="nav">
+            <a href="index.html">&larr; Back to Home</a>
+            <div class="nav-actions">
+                <button onclick="showTab('new')">+ New Meeting</button>
+                <button onclick="showTab('export')">&#8615; Export All</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="active" onclick="showTab('list')" data-tab="list">All Meetings</button>
+                <button onclick="showTab('new')" data-tab="new">New Meeting</button>
+                <button onclick="showTab('export')" data-tab="export">Export</button>
+            </div>
+
+            <!-- Meeting List Tab -->
+            <div class="tab-content active" id="list-tab">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search meetings by title, attendees, or notes..." oninput="renderList()">
+                </div>
+                <div class="stats-bar" id="statsBar"></div>
+                <ul class="meeting-list" id="meetingList"></ul>
+            </div>
+
+            <!-- New / Edit Meeting Tab -->
+            <div class="tab-content" id="new-tab">
+                <h2 id="formTitle" style="color: #2c3e50; margin-bottom: 20px;">New Meeting</h2>
+                <form id="meetingForm" onsubmit="saveMeeting(event)">
+                    <input type="hidden" id="editId" value="">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="meetingTitle">Meeting Title *</label>
+                            <input type="text" id="meetingTitle" placeholder="e.g. Weekly Team Standup" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="meetingDate">Date *</label>
+                            <input type="date" id="meetingDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="meetingTime">Time</label>
+                            <input type="time" id="meetingTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="meetingLocation">Location</label>
+                            <input type="text" id="meetingLocation" placeholder="e.g. Conference Room A / Zoom">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meetingAttendees">Attendees</label>
+                        <input type="text" id="meetingAttendees" placeholder="e.g. Alice, Bob, Charlie">
+                        <div class="hint">Separate names with commas</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meetingAgenda">Agenda</label>
+                        <textarea id="meetingAgenda" rows="3" placeholder="Meeting agenda items..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meetingNotes">Discussion Notes</label>
+                        <textarea id="meetingNotes" rows="5" placeholder="Key discussion points and decisions..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="meetingDecisions">Decisions Made</label>
+                        <textarea id="meetingDecisions" rows="3" placeholder="Record any decisions reached during the meeting..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Action Items</label>
+                        <ul class="action-items-list" id="actionItemsList"></ul>
+                        <button type="button" class="add-action-btn" onclick="addActionItem()">+ Add Action Item</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="saveBtn">Save Meeting</button>
+                        <button type="button" class="btn-secondary" onclick="resetForm(); showTab('list')">Cancel</button>
+                        <button type="button" class="btn-danger" id="deleteBtn" style="display:none; margin-left:auto;" onclick="deleteCurrentMeeting()">Delete</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- View Meeting -->
+            <div class="tab-content" id="view-tab">
+                <div id="viewContent"></div>
+            </div>
+
+            <!-- Export Tab -->
+            <div class="tab-content" id="export-tab">
+                <div class="export-panel">
+                    <h3>Export All Meeting Records</h3>
+                    <p>Download all your meeting minutes in your preferred format. All data is exported from your browser's local storage.</p>
+                    <div class="export-options">
+                        <button class="export-btn" onclick="exportAs('markdown')">
+                            <span class="icon">&#128196;</span>
+                            <span>Markdown (.md)</span>
+                        </button>
+                        <button class="export-btn" onclick="exportAs('json')">
+                            <span class="icon">&#123;&#125;</span>
+                            <span>JSON (.json)</span>
+                        </button>
+                        <button class="export-btn" onclick="exportAs('csv')">
+                            <span class="icon">&#128202;</span>
+                            <span>CSV (.csv)</span>
+                        </button>
+                        <button class="export-btn" onclick="exportAs('text')">
+                            <span class="icon">&#128462;</span>
+                            <span>Plain Text (.txt)</span>
+                        </button>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;" class="export-panel">
+                    <h3>Import Meeting Records</h3>
+                    <p>Restore meeting minutes from a previously exported JSON file.</p>
+                    <div class="form-actions">
+                        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">Choose JSON File</button>
+                        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importMeetings(event)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants ---
+        const STORAGE_KEY = 'simple_tools_meetings';
+
+        // --- State ---
+        let actionItemCount = 0;
+        let currentEditId = null;
+
+        // --- Storage ---
+        function getMeetings() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        }
+
+        function saveMeetings(meetings) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(meetings));
+        }
+
+        // --- Tab Navigation ---
+        function showTab(tab) {
+            document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            const tabBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
+            if (tabBtn) tabBtn.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+
+            if (tab === 'list') renderList();
+            if (tab === 'new' && !currentEditId) resetForm();
+        }
+
+        // --- Action Items ---
+        function addActionItem(task, assignee) {
+            task = task || '';
+            assignee = assignee || '';
+            const list = document.getElementById('actionItemsList');
+            const idx = actionItemCount++;
+            const li = document.createElement('li');
+            li.className = 'action-item-row';
+            li.innerHTML = `
+                <input type="text" placeholder="Action item description" value="${escapeAttr(task)}" class="action-task">
+                <input type="text" placeholder="Assignee" value="${escapeAttr(assignee)}" class="assignee-input action-assignee">
+                <button type="button" onclick="this.parentElement.remove()">&#10005;</button>
+            `;
+            list.appendChild(li);
+        }
+
+        function getActionItems() {
+            const items = [];
+            document.querySelectorAll('#actionItemsList .action-item-row').forEach(row => {
+                const task = row.querySelector('.action-task').value.trim();
+                const assignee = row.querySelector('.action-assignee').value.trim();
+                if (task) {
+                    items.push({ task, assignee });
+                }
+            });
+            return items;
+        }
+
+        // --- Form ---
+        function resetForm() {
+            currentEditId = null;
+            document.getElementById('editId').value = '';
+            document.getElementById('meetingForm').reset();
+            document.getElementById('actionItemsList').innerHTML = '';
+            document.getElementById('formTitle').textContent = 'New Meeting';
+            document.getElementById('saveBtn').textContent = 'Save Meeting';
+            document.getElementById('deleteBtn').style.display = 'none';
+            actionItemCount = 0;
+
+            // Set default date to today
+            const today = new Date();
+            document.getElementById('meetingDate').value = formatDateISO(today);
+        }
+
+        function populateForm(meeting) {
+            currentEditId = meeting.id;
+            document.getElementById('editId').value = meeting.id;
+            document.getElementById('meetingTitle').value = meeting.title || '';
+            document.getElementById('meetingDate').value = meeting.date || '';
+            document.getElementById('meetingTime').value = meeting.time || '';
+            document.getElementById('meetingLocation').value = meeting.location || '';
+            document.getElementById('meetingAttendees').value = (meeting.attendees || []).join(', ');
+            document.getElementById('meetingAgenda').value = meeting.agenda || '';
+            document.getElementById('meetingNotes').value = meeting.notes || '';
+            document.getElementById('meetingDecisions').value = meeting.decisions || '';
+
+            document.getElementById('actionItemsList').innerHTML = '';
+            actionItemCount = 0;
+            (meeting.actionItems || []).forEach(item => {
+                addActionItem(item.task, item.assignee);
+            });
+
+            document.getElementById('formTitle').textContent = 'Edit Meeting';
+            document.getElementById('saveBtn').textContent = 'Update Meeting';
+            document.getElementById('deleteBtn').style.display = 'inline-block';
+        }
+
+        function saveMeeting(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('meetingTitle').value.trim();
+            const date = document.getElementById('meetingDate').value;
+
+            if (!title || !date) {
+                showMessage('Title and date are required', 'error');
+                return;
+            }
+
+            const meeting = {
+                id: currentEditId || Date.now(),
+                title: title,
+                date: date,
+                time: document.getElementById('meetingTime').value,
+                location: document.getElementById('meetingLocation').value.trim(),
+                attendees: document.getElementById('meetingAttendees').value
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(s => s),
+                agenda: document.getElementById('meetingAgenda').value.trim(),
+                notes: document.getElementById('meetingNotes').value.trim(),
+                decisions: document.getElementById('meetingDecisions').value.trim(),
+                actionItems: getActionItems(),
+                updatedAt: new Date().toISOString()
+            };
+
+            if (!currentEditId) {
+                meeting.createdAt = new Date().toISOString();
+            }
+
+            const meetings = getMeetings();
+
+            if (currentEditId) {
+                const idx = meetings.findIndex(m => m.id === currentEditId);
+                if (idx !== -1) {
+                    meeting.createdAt = meetings[idx].createdAt;
+                    meetings[idx] = meeting;
+                }
+            } else {
+                meetings.unshift(meeting);
+            }
+
+            saveMeetings(meetings);
+            resetForm();
+            showTab('list');
+            showMessage(currentEditId ? 'Meeting updated' : 'Meeting saved', 'success');
+        }
+
+        function deleteMeeting(id) {
+            if (!confirm('Are you sure you want to delete this meeting record?')) return;
+            let meetings = getMeetings();
+            meetings = meetings.filter(m => m.id !== id);
+            saveMeetings(meetings);
+            renderList();
+            showMessage('Meeting deleted', 'success');
+        }
+
+        function deleteCurrentMeeting() {
+            if (!currentEditId) return;
+            if (!confirm('Are you sure you want to delete this meeting record?')) return;
+            let meetings = getMeetings();
+            meetings = meetings.filter(m => m.id !== currentEditId);
+            saveMeetings(meetings);
+            resetForm();
+            showTab('list');
+            showMessage('Meeting deleted', 'success');
+        }
+
+        function editMeeting(id) {
+            const meetings = getMeetings();
+            const meeting = meetings.find(m => m.id === id);
+            if (!meeting) return;
+            populateForm(meeting);
+            showTab('new');
+        }
+
+        function viewMeeting(id) {
+            const meetings = getMeetings();
+            const meeting = meetings.find(m => m.id === id);
+            if (!meeting) return;
+
+            const attendeesHtml = meeting.attendees.length > 0
+                ? meeting.attendees.join(', ')
+                : '<em>None recorded</em>';
+
+            const actionItemsHtml = meeting.actionItems.length > 0
+                ? '<ul>' + meeting.actionItems.map(item =>
+                    `<li>
+                        <span>${escapeHtml(item.task)}</span>
+                        ${item.assignee ? '<span class="assignee-badge">' + escapeHtml(item.assignee) + '</span>' : ''}
+                    </li>`
+                ).join('') + '</ul>'
+                : '<p><em>No action items</em></p>';
+
+            document.getElementById('viewContent').innerHTML = `
+                <div class="view-header">
+                    <h2>${escapeHtml(meeting.title)}</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-secondary" onclick="editMeeting(${meeting.id})">&#9998; Edit</button>
+                        <button class="btn-secondary" onclick="showTab('list')">&larr; Back</button>
+                    </div>
+                </div>
+                <div class="view-meta">
+                    <span>&#128197; ${formatDateDisplay(meeting.date)}</span>
+                    ${meeting.time ? '<span>&#128336; ' + formatTime(meeting.time) + '</span>' : ''}
+                    ${meeting.location ? '<span>&#128205; ' + escapeHtml(meeting.location) + '</span>' : ''}
+                </div>
+                <div class="view-section">
+                    <h3>Attendees</h3>
+                    <p>${attendeesHtml}</p>
+                </div>
+                ${meeting.agenda ? `
+                <div class="view-section">
+                    <h3>Agenda</h3>
+                    <p>${escapeHtml(meeting.agenda)}</p>
+                </div>` : ''}
+                ${meeting.notes ? `
+                <div class="view-section">
+                    <h3>Discussion Notes</h3>
+                    <p>${escapeHtml(meeting.notes)}</p>
+                </div>` : ''}
+                ${meeting.decisions ? `
+                <div class="view-section">
+                    <h3>Decisions Made</h3>
+                    <p>${escapeHtml(meeting.decisions)}</p>
+                </div>` : ''}
+                <div class="view-section">
+                    <h3>Action Items</h3>
+                    ${actionItemsHtml}
+                </div>
+            `;
+
+            // Show view tab manually
+            document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('view-tab').classList.add('active');
+        }
+
+        // --- Render List ---
+        function renderList() {
+            const meetings = getMeetings();
+            const query = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtered = meetings.filter(m => {
+                if (!query) return true;
+                return (m.title || '').toLowerCase().includes(query) ||
+                    (m.attendees || []).join(' ').toLowerCase().includes(query) ||
+                    (m.notes || '').toLowerCase().includes(query) ||
+                    (m.agenda || '').toLowerCase().includes(query) ||
+                    (m.location || '').toLowerCase().includes(query);
+            });
+
+            // Stats
+            const totalActionItems = meetings.reduce((sum, m) => sum + (m.actionItems || []).length, 0);
+            document.getElementById('statsBar').innerHTML = `
+                <div class="stat-badge"><strong>${meetings.length}</strong> meeting${meetings.length !== 1 ? 's' : ''}</div>
+                <div class="stat-badge"><strong>${totalActionItems}</strong> action item${totalActionItems !== 1 ? 's' : ''}</div>
+            `;
+
+            const list = document.getElementById('meetingList');
+
+            if (filtered.length === 0) {
+                const msg = meetings.length === 0
+                    ? 'No meetings recorded yet. Click "New Meeting" to add one!'
+                    : 'No meetings match your search.';
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">&#128221;</div>
+                        <p>${msg}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by date descending
+            filtered.sort((a, b) => {
+                if (a.date !== b.date) return b.date.localeCompare(a.date);
+                return (b.time || '').localeCompare(a.time || '');
+            });
+
+            list.innerHTML = filtered.map(m => {
+                const preview = m.notes || m.agenda || '';
+                const actionCount = (m.actionItems || []).length;
+                return `
+                    <li class="meeting-card" onclick="viewMeeting(${m.id})">
+                        <div class="meeting-card-header">
+                            <div>
+                                <h3>${escapeHtml(m.title)}</h3>
+                                <div class="meeting-card-meta">
+                                    <span>&#128197; ${formatDateDisplay(m.date)}</span>
+                                    ${m.time ? '<span>&#128336; ' + formatTime(m.time) + '</span>' : ''}
+                                    ${m.attendees.length > 0 ? '<span>&#128101; ' + m.attendees.length + ' attendee' + (m.attendees.length !== 1 ? 's' : '') + '</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="meeting-card-actions" onclick="event.stopPropagation()">
+                                <button class="edit-btn" onclick="editMeeting(${m.id})" title="Edit">&#9998;</button>
+                                <button class="delete-btn" onclick="deleteMeeting(${m.id})" title="Delete">&#10005;</button>
+                            </div>
+                        </div>
+                        ${preview ? '<div class="meeting-card-preview">' + escapeHtml(preview) + '</div>' : ''}
+                        ${actionCount > 0 ? '<span class="action-tag">' + actionCount + ' action item' + (actionCount !== 1 ? 's' : '') + '</span>' : ''}
+                    </li>
+                `;
+            }).join('');
+        }
+
+        // --- Export ---
+        function exportAs(format) {
+            const meetings = getMeetings();
+            if (meetings.length === 0) {
+                showMessage('No meetings to export', 'error');
+                return;
+            }
+
+            let content = '';
+            let filename = '';
+            let mime = '';
+
+            switch (format) {
+                case 'markdown':
+                    content = exportMarkdown(meetings);
+                    filename = 'meeting-minutes.md';
+                    mime = 'text/markdown';
+                    break;
+                case 'json':
+                    content = JSON.stringify(meetings, null, 2);
+                    filename = 'meeting-minutes.json';
+                    mime = 'application/json';
+                    break;
+                case 'csv':
+                    content = exportCSV(meetings);
+                    filename = 'meeting-minutes.csv';
+                    mime = 'text/csv';
+                    break;
+                case 'text':
+                    content = exportText(meetings);
+                    filename = 'meeting-minutes.txt';
+                    mime = 'text/plain';
+                    break;
+            }
+
+            downloadFile(content, filename, mime);
+            showMessage('Exported ' + meetings.length + ' meeting(s) as ' + format.toUpperCase(), 'success');
+        }
+
+        function exportMarkdown(meetings) {
+            return meetings.map(m => {
+                let md = `# ${m.title}\n\n`;
+                md += `**Date:** ${formatDateDisplay(m.date)}`;
+                if (m.time) md += ` at ${formatTime(m.time)}`;
+                md += '\n';
+                if (m.location) md += `**Location:** ${m.location}\n`;
+                if (m.attendees.length > 0) md += `**Attendees:** ${m.attendees.join(', ')}\n`;
+                md += '\n';
+
+                if (m.agenda) {
+                    md += `## Agenda\n\n${m.agenda}\n\n`;
+                }
+                if (m.notes) {
+                    md += `## Discussion Notes\n\n${m.notes}\n\n`;
+                }
+                if (m.decisions) {
+                    md += `## Decisions Made\n\n${m.decisions}\n\n`;
+                }
+                if (m.actionItems.length > 0) {
+                    md += `## Action Items\n\n`;
+                    m.actionItems.forEach(item => {
+                        md += `- [ ] ${item.task}`;
+                        if (item.assignee) md += ` _(${item.assignee})_`;
+                        md += '\n';
+                    });
+                    md += '\n';
+                }
+                md += '---\n\n';
+                return md;
+            }).join('');
+        }
+
+        function exportCSV(meetings) {
+            const headers = ['Title', 'Date', 'Time', 'Location', 'Attendees', 'Agenda', 'Notes', 'Decisions', 'Action Items'];
+            const rows = meetings.map(m => [
+                csvEscape(m.title),
+                m.date,
+                m.time || '',
+                csvEscape(m.location || ''),
+                csvEscape(m.attendees.join('; ')),
+                csvEscape(m.agenda || ''),
+                csvEscape(m.notes || ''),
+                csvEscape(m.decisions || ''),
+                csvEscape(m.actionItems.map(a => a.task + (a.assignee ? ' (' + a.assignee + ')' : '')).join('; '))
+            ]);
+
+            return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        }
+
+        function exportText(meetings) {
+            return meetings.map(m => {
+                let txt = `${'='.repeat(60)}\n`;
+                txt += `${m.title.toUpperCase()}\n`;
+                txt += `${'='.repeat(60)}\n\n`;
+                txt += `Date: ${formatDateDisplay(m.date)}`;
+                if (m.time) txt += ` at ${formatTime(m.time)}`;
+                txt += '\n';
+                if (m.location) txt += `Location: ${m.location}\n`;
+                if (m.attendees.length > 0) txt += `Attendees: ${m.attendees.join(', ')}\n`;
+                txt += '\n';
+
+                if (m.agenda) {
+                    txt += `AGENDA\n${'-'.repeat(30)}\n${m.agenda}\n\n`;
+                }
+                if (m.notes) {
+                    txt += `DISCUSSION NOTES\n${'-'.repeat(30)}\n${m.notes}\n\n`;
+                }
+                if (m.decisions) {
+                    txt += `DECISIONS MADE\n${'-'.repeat(30)}\n${m.decisions}\n\n`;
+                }
+                if (m.actionItems.length > 0) {
+                    txt += `ACTION ITEMS\n${'-'.repeat(30)}\n`;
+                    m.actionItems.forEach((item, i) => {
+                        txt += `  ${i + 1}. ${item.task}`;
+                        if (item.assignee) txt += ` [${item.assignee}]`;
+                        txt += '\n';
+                    });
+                    txt += '\n';
+                }
+                return txt;
+            }).join('\n');
+        }
+
+        function csvEscape(str) {
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- Import ---
+        function importMeetings(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!Array.isArray(imported)) {
+                        showMessage('Invalid file format: expected an array of meetings', 'error');
+                        return;
+                    }
+                    const existing = getMeetings();
+                    const existingIds = new Set(existing.map(m => m.id));
+                    let added = 0;
+                    imported.forEach(m => {
+                        if (m.title && m.date && !existingIds.has(m.id)) {
+                            existing.unshift(m);
+                            added++;
+                        }
+                    });
+                    saveMeetings(existing);
+                    renderList();
+                    showMessage('Imported ' + added + ' new meeting(s)', 'success');
+                } catch (err) {
+                    showMessage('Failed to parse file: ' + err.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // --- Helpers ---
+        function formatDateISO(date) {
+            return date.getFullYear() + '-' +
+                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                String(date.getDate()).padStart(2, '0');
+        }
+
+        function formatDateDisplay(dateStr) {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            const date = new Date(year, month - 1, day);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatTime(timeStr) {
+            if (!timeStr) return '';
+            const [h, m] = timeStr.split(':').map(Number);
+            const period = h >= 12 ? 'PM' : 'AM';
+            const hour12 = h % 12 || 12;
+            return hour12 + ':' + String(m).padStart(2, '0') + ' ' + period;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function showMessage(text, type) {
+            const el = document.getElementById('message');
+            el.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
+            setTimeout(() => { el.innerHTML = ''; }, 3000);
+        }
+
+        // --- Init ---
+        renderList();
+    </script>
+</body>
+</html>
