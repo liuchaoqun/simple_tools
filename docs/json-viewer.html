@@ -261,6 +261,11 @@
                         <option value="html">HTML</option>
                     </select>
                 </div>
+                <div class="controls" style="margin-top: 0; margin-bottom: 10px;">
+                    <button class="btn-primary" onclick="formatData()">Format Data</button>
+                    <button class="btn-secondary" onclick="clearInput()">Clear</button>
+                    <button class="btn-success" onclick="copyToClipboard()">Copy Output</button>
+                </div>
                 <textarea id="jsonInput" placeholder='Paste your JSON here, e.g.:
 {
   "name": "John Doe",
